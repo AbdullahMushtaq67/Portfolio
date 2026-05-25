@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'motion/react';
-import { Mail, Linkedin, Github, ChevronDown, MapPin, Calendar } from 'lucide-react';
+import { Mail, Linkedin, Github, ChevronDown, MapPin, Calendar, ImagePlus, User } from 'lucide-react';
 
 // ─── Palette ───────────────────────────────────────────────────────────────
 const C = {
@@ -15,6 +15,38 @@ const C = {
   muted:    '#b8c1d1',
   faint:    '#7a8ba0',
 };
+
+// ─── Image Placeholder ──────────────────────────────────────────────────────
+function ImgPlaceholder({ width = '100%', height = 180, round = false, label = 'Add Image' }: {
+  width?: string | number;
+  height?: number;
+  round?: boolean;
+  label?: string;
+}) {
+  return (
+    <div
+      style={{
+        width,
+        height,
+        borderRadius: round ? '50%' : '10px',
+        border: `2px dashed ${C.border}`,
+        background: `${C.accent}0a`,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '6px',
+        color: C.faint,
+        fontSize: '0.72rem',
+        letterSpacing: '0.05em',
+        userSelect: 'none',
+      }}
+    >
+      <ImagePlus size={20} style={{ color: C.accent, opacity: 0.5 }} />
+      <span>{label}</span>
+    </div>
+  );
+}
 
 // ─── Animated Network Canvas ────────────────────────────────────────────────
 function NetworkCanvas() {
@@ -501,24 +533,26 @@ export default function App() {
               className="rounded-xl p-8 text-center"
               style={{ background: C.card, border: `1px solid ${C.border}` }}
             >
-              <div
-                className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-5 text-2xl font-bold"
-                style={{ background: `${C.accent}22`, border: `2px solid ${C.accent}`, color: C.accent, fontFamily: 'Oswald, sans-serif' }}
-              >
-                AMM
+              {/* Profile Picture Placeholder */}
+              <div className="flex justify-center mb-5">
+                <ImgPlaceholder width={120} height={120} round label="Profile Photo" />
               </div>
               <div className="space-y-3 text-sm" style={{ color: C.muted }}>
                 {[
                   { label: 'Location', value: 'Bahrain / Pakistan' },
                   { label: 'Email', value: 'abdullah.mushtaq6876@gmail.com' },
-                  { label: 'LinkedIn', value: 'in/abdullah-mohammad-mushtaq' },
+                  { label: 'LinkedIn', value: 'in/abdullah-mohammad-mushtaq', link: 'https://www.linkedin.com/in/abdullah-mohammad-mushtaq/' },
                   { label: 'Certifications', value: '46+' },
                   { label: 'Experience', value: '4+ Years' },
                   { label: 'Languages', value: 'EN · AR · UR · PK · HI · PS' },
                 ].map(r => (
                   <div key={r.label} className="flex justify-between gap-4">
                     <span style={{ color: C.faint }}>{r.label}</span>
-                    <span className="text-right" style={{ color: C.text }}>{r.value}</span>
+                    {'link' in r ? (
+                      <a href={r.link} target="_blank" rel="noopener noreferrer" className="text-right hover:underline" style={{ color: C.accentHi }}>{r.value}</a>
+                    ) : (
+                      <span className="text-right" style={{ color: C.text }}>{r.value}</span>
+                    )}
                   </div>
                 ))}
               </div>
@@ -539,32 +573,39 @@ export default function App() {
                 degree: 'Bachelor of Computer Science',
                 institution: 'Iqra University',
                 period: '2023 – 2027',
-                detail: 'Grade: B · Specialization in Cybersecurity, GRC, IT Infrastructure & Networking. Active in software development, data structures, algorithms, and AI projects.',
+                detail: 'Grade: B · Specialization in Cybersecurity, GRC, IT Infrastructure & Networking. Active in software development, data structures, algorithms, and AI projects applying theoretical knowledge to real-world problems.',
               },
               {
                 degree: 'Diploma of Associate Engineering in Computer Information Technology',
-                institution: 'Iqra College of Technology & Skills',
-                period: 'Completed',
-                detail: 'Core foundations in computer engineering and information technology.',
+                institution: 'Iqra College of Technology & Skills (under International Islamic University, Islamabad)',
+                period: 'Jan 2019 – Jun 2022',
+                detail: 'Grade: B · Rigorous curriculum combining in-depth theoretical knowledge with extensive practical applications. Developed proficiency in C++, Java, and Python, with a strong focus on hardware, networking, and IT systems.',
               },
               {
                 degree: 'Diploma in Human Resources Management and Services',
                 institution: 'Alison',
                 period: 'Apr 2024 – Present',
-                detail: 'Grade: Pass · Focus on employee relations, recruitment, performance management, and strategic HR planning.',
+                detail: 'Grade: Pass · Focus on employee relations, recruitment, performance management, and strategic HR planning. Applied theoretical knowledge to complex organizational dynamics and HR challenges.',
               },
             ].map((edu, i) => (
               <Card key={i} delay={i * 0.1}>
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
-                  <h3 style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, fontSize: '1.1rem', color: C.text }}>
-                    {edu.degree}
-                  </h3>
-                  <span className="flex items-center gap-1 text-xs whitespace-nowrap" style={{ color: C.faint }}>
-                    <Calendar size={12} />{edu.period}
-                  </span>
+                <div className="flex gap-5 items-start">
+                  <div className="flex-shrink-0">
+                    <ImgPlaceholder width={56} height={56} label="Logo" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
+                      <h3 style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, fontSize: '1.05rem', color: C.text }}>
+                        {edu.degree}
+                      </h3>
+                      <span className="flex items-center gap-1 text-xs whitespace-nowrap flex-shrink-0" style={{ color: C.faint }}>
+                        <Calendar size={12} />{edu.period}
+                      </span>
+                    </div>
+                    <p className="text-sm mb-2 font-medium" style={{ color: C.accent }}>{edu.institution}</p>
+                    <p className="text-sm leading-relaxed" style={{ color: C.muted }}>{edu.detail}</p>
+                  </div>
                 </div>
-                <p className="text-sm mb-2 font-medium" style={{ color: C.accent }}>{edu.institution}</p>
-                <p className="text-sm leading-relaxed" style={{ color: C.muted }}>{edu.detail}</p>
               </Card>
             ))}
           </div>
@@ -593,21 +634,24 @@ export default function App() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08 }}
                 whileHover={{ y: -4 }}
-                className="rounded-xl p-8 text-center"
+                className="rounded-xl overflow-hidden"
                 style={{ background: C.card, border: `1px solid ${C.border}` }}
               >
-                <div
-                  style={{
-                    fontFamily: 'Oswald, sans-serif',
-                    fontWeight: 700,
-                    fontSize: '2.8rem',
-                    color: C.accent,
-                    lineHeight: 1,
-                  }}
-                >
-                  {a.number}
+                <ImgPlaceholder height={100} label="Achievement Image" />
+                <div className="p-6 text-center">
+                  <div
+                    style={{
+                      fontFamily: 'Oswald, sans-serif',
+                      fontWeight: 700,
+                      fontSize: '2.4rem',
+                      color: C.accent,
+                      lineHeight: 1,
+                    }}
+                  >
+                    {a.number}
+                  </div>
+                  <div className="mt-2 text-sm" style={{ color: C.muted }}>{a.label}</div>
                 </div>
-                <div className="mt-3 text-sm" style={{ color: C.muted }}>{a.label}</div>
               </motion.div>
             ))}
           </div>
@@ -638,12 +682,13 @@ export default function App() {
                 }}
               >
                 <div className="p-5">
-                  <div className="flex items-center justify-between mb-1">
-                    <span style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, color: C.text, fontSize: '0.95rem' }}>
+                  <div className="flex items-center gap-3 mb-3">
+                    <ImgPlaceholder width={36} height={36} label="" />
+                    <span style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, color: C.text, fontSize: '0.95rem', flex: 1 }}>
                       {issuer}
                     </span>
                     <span
-                      className="text-xs px-2 py-0.5 rounded-full"
+                      className="text-xs px-2 py-0.5 rounded-full flex-shrink-0"
                       style={{ background: `${C.accent}33`, color: C.accentHi }}
                     >
                       {certs.length}
@@ -680,23 +725,35 @@ export default function App() {
           <SectionHeading>Projects</SectionHeading>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {projects.map((p, i) => (
-              <Card key={i} delay={i * 0.08}>
-                <div className="flex items-start justify-between gap-3 mb-2">
-                  <h3 style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, fontSize: '1rem', color: C.text, lineHeight: 1.3 }}>
-                    {p.title}
-                  </h3>
-                  <span className="text-xs whitespace-nowrap pt-0.5" style={{ color: C.faint }}>{p.date}</span>
-                </div>
-                {p.association && (
-                  <div className="flex items-center gap-1 mb-3 text-xs" style={{ color: C.accent }}>
-                    <MapPin size={11} />{p.association}
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.08 }}
+                whileHover={{ y: -4, borderColor: C.accentHi }}
+                className="rounded-xl overflow-hidden"
+                style={{ background: C.card, border: `1px solid ${C.border}`, transition: 'border-color 0.2s' }}
+              >
+                <ImgPlaceholder height={150} label="Project Screenshot" />
+                <div className="p-6">
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <h3 style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, fontSize: '1rem', color: C.text, lineHeight: 1.3 }}>
+                      {p.title}
+                    </h3>
+                    <span className="text-xs whitespace-nowrap pt-0.5" style={{ color: C.faint }}>{p.date}</span>
                   </div>
-                )}
-                <p className="text-sm leading-relaxed mb-5" style={{ color: C.muted }}>{p.description}</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {p.stack.map((t, ti) => <Tag key={ti}>{t}</Tag>)}
+                  {p.association && (
+                    <div className="flex items-center gap-1 mb-3 text-xs" style={{ color: C.accent }}>
+                      <MapPin size={11} />{p.association}
+                    </div>
+                  )}
+                  <p className="text-sm leading-relaxed mb-5" style={{ color: C.muted }}>{p.description}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {p.stack.map((t, ti) => <Tag key={ti}>{t}</Tag>)}
+                  </div>
                 </div>
-              </Card>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -818,7 +875,7 @@ export default function App() {
           >
             {[
               { icon: Mail,     label: 'Email',    href: 'mailto:abdullah.mushtaq6876@gmail.com' },
-              { icon: Linkedin, label: 'LinkedIn', href: 'https://linkedin.com/in/abdullah-mohammad-mushtaq' },
+              { icon: Linkedin, label: 'LinkedIn', href: 'https://www.linkedin.com/in/abdullah-mohammad-mushtaq/' },
               { icon: Github,   label: 'GitHub',   href: 'https://github.com' },
             ].map((s, i) => (
               <motion.a
