@@ -1,0 +1,56 @@
+Prompt for a Premium Cybersecurity Portfolio Website Design
+
+Overall Vibe:
+Create a mature, professional, and visually striking portfolio for a cybersecurity/IT expert. Avoid childish, tacky, or overly “AI-generated” looks. The design should feel confident, modern, and trustworthy.
+
+Color Palette:
+Use a deep, manly, and sophisticated palette.
+
+Primary: #101624 (deep navy)
+Secondary: #232b3a (slate blue-gray)
+Accent: #3e7cb1 (muted blue)
+Highlight: #e0e6ed (off-white for contrast)
+Subtle accent: #b8c1d1 (muted steel)
+Avoid neon/cyan, use subtle glows only for network lines.
+Fonts:
+
+Headings: “Montserrat” or “Oswald” (bold, geometric, modern, all-caps for dominance)
+Body: “Inter” or “Roboto” (clean, readable, professional)
+No curvy or playful fonts.
+Background:
+
+Use a dark, grainy texture overlay for depth (optional, but subtle).
+Add animated, interactive network lines (SVG/Canvas) in the background, with soft blue glows, not too bright.
+Layout & Spacing:
+
+Use generous whitespace and clear section separation.
+Employ CSS grid/flexbox for responsive, modern layouts.
+All sections (Projects, Experience, Achievements, Certificates, etc.) should have space for images and text.
+Animations:
+
+Use smooth, subtle transitions (fade, slide, scale) for section reveals and hover effects.
+Avoid bouncy or childish animations.
+Certificates Section:
+
+Each certificate category appears as a “folder” with certificates peeking out at the corners.
+On hover, certificates animate outward in a circular or arc pattern, as if fanning out from the folder.
+Use Framer Motion or similar for interactive, physics-based animation.
+Resume Integration:
+
+All resume headings (Experience, Education, Skills, Projects, Achievements, Certifications, etc.) must be included as sections.
+Each section should have a clear, bold heading and space for both text and images/icons.
+Other Details:
+
+Allow for easy addition of project images, screenshots, and icons.
+Navigation should be sticky, minimal, and easy to use.
+All UI elements (buttons, cards, etc.) should have a premium, minimal look with subtle shadows and borders.
+Accessibility:
+
+Ensure good color contrast and readable font sizes.
+All interactive elements should be keyboard accessible.
+Summary:
+Design a premium, mature cybersecurity portfolio with a deep, masculine color palette, bold modern fonts, interactive network line backgrounds, and sophisticated animations. The certificates section should have a unique, folder-with-fanning-cards animation. All resume sections must be present, with space for images and icons. Avoid anything childish, tacky, or overly flashy.
+
+You can use this prompt for an AI design tool, a designer, or as a requirements doc for your own coding. Let me know if you want this broken down into actionable coding steps!
+
+GPT-4.1 • 0x
