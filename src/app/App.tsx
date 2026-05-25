@@ -304,96 +304,6 @@ export default function App() {
     ],
   };
 
-  const projects = [
-    {
-      title: 'LeafAI – Plant Disease Detection & Treatment Recommender',
-      date: 'Feb 2026',
-      association: 'Iqra University',
-      stack: ['Python', 'TensorFlow/Keras', 'MobileNetV2', 'OpenCV', 'Streamlit', 'NumPy'],
-      description: 'Deep learning system to identify diseases in plant leaves using MobileNetV2 transfer learning on 16,000+ PlantVillage images. Outputs disease predictions with confidence scores via a Streamlit web app, enabling early detection for farmers and agritech professionals.',
-    },
-    {
-      title: 'ClimaCast – Weather Forecasting PWA & Android App',
-      date: 'Jan 2026',
-      association: 'Iqra University',
-      stack: ['React', 'TypeScript', 'Tailwind CSS', 'Capacitor', 'PWA', 'Weather API'],
-      description: 'Responsive weather forecasting app built as a Progressive Web App and packaged into a native Android APK. Delivers real-time updates, hourly/daily forecasts, location detection, offline caching via service workers, and favorite city management.',
-    },
-    {
-      title: 'Smart Encryption Web App',
-      date: 'Sep 2025',
-      association: 'Iqra University',
-      stack: ['Python', 'Flask', 'JavaScript', 'AES/Fernet', 'Caesar Cipher'],
-      description: 'Web application for encryption and decryption featuring AES (Fernet) symmetric encryption, Caesar Cipher encoding, and drag-and-drop file processing. Demonstrates applied cryptography in a practical, user-friendly interface.',
-    },
-    {
-      title: 'Simulated Phishing & Keylogging Attack Demo',
-      date: 'Aug 2025',
-      stack: ['Threat Emulation', 'Security Awareness', 'MFA Advocacy', 'Risk Mitigation'],
-      description: 'Cybersecurity awareness project simulating a phishing attack and keylogging demonstration to highlight human-error vulnerabilities. Produced training content on identifying fake login portals, URL verification, and building a security-first culture.',
-    },
-    {
-      title: 'Enterprise-Level Multi-Protocol Network Design',
-      date: 'Apr 2025',
-      association: 'Iqra University',
-      stack: ['Cisco Packet Tracer', 'OSPF', 'EIGRP', 'RIP', 'VLANs', 'DHCP'],
-      description: 'Large-scale enterprise network topology integrating RIP, OSPF (Multi-Area), and EIGRP routing protocols. Features hierarchical LAN/WAN design, wireless access, Mail/DHCP servers, redundant paths for fault tolerance, and proper subnetting.',
-    },
-    {
-      title: 'Auto Paper Formation Software',
-      date: 'Feb 2025',
-      stack: ['Automation', 'PDF/DOCX Export', 'LMS Integration', 'Access Control'],
-      description: 'Educational software automating question paper creation with dynamic question banks, randomized generation, multi-format export (PDF, DOCX), user roles & access control, and LMS/SIS integration. Reduced paperwork by 85% and improved efficiency by 95%.',
-    },
-  ];
-
-  const experiences = [
-    {
-      role: 'IT & Marketing Manager',
-      company: 'Al Mahira Workshop W.L.L',
-      period: 'Jan 2025 – Present',
-      location: 'Tubli, Bahrain · Hybrid',
-      description: 'Overseeing IT systems to ensure seamless operations and implementing technology solutions for business needs. Leading digital marketing strategies including social media management and brand development. Coordinating between technical and marketing teams to align objectives with technology-driven growth.',
-    },
-    {
-      role: 'IT Support & Administrative Assistant',
-      company: 'Uni Technical Services',
-      period: 'Jan 2024 – Dec 2024',
-      location: 'Dubai, UAE · Remote',
-      description: 'Delivered comprehensive IT support by troubleshooting technical issues and assisting users with hardware and software problems. Managed administrative tasks including scheduling, record-keeping, and communications to enhance operational efficiency.',
-    },
-    {
-      role: 'Ambassador',
-      company: 'Volunteer Force Pakistan (clcglobally)',
-      period: 'Jul 2024 – Oct 2024',
-      location: 'Islamabad, Pakistan · Internship',
-      description: 'Assisted in event planning and coordination for national-level initiatives. Supported project operations through communication and logistics tasks. Received Certificate of Appreciation for contributions at the Creative Leadership Conference.',
-    },
-    {
-      role: 'Information Technology Consultant',
-      company: 'Naqvi Associates',
-      period: 'Jul 2022 – Dec 2023',
-      location: 'Islamabad, Pakistan · On-site',
-      description: 'Provided expert technical consulting to enhance IT systems and workflows for clients. Implemented digital solutions including system upgrades and troubleshooting processes. Collaborated on digital marketing initiatives to support online platforms and drive business growth.',
-    },
-    {
-      role: 'Information Technology Assistant',
-      company: 'Naqvi Associates',
-      period: 'Nov 2021 – Apr 2022',
-      location: 'Islamabad, Pakistan · Internship',
-      description: 'Assisted in daily IT operations ensuring smooth system monitoring and basic troubleshooting. Provided technical guidance for end-users with hardware and software setups. Maintained IT documentation and coordinated small technical tasks within the team.',
-    },
-  ];
-
-  const skills: Record<string, string[]> = {
-    'Cybersecurity': ['Threat Intelligence', 'SIEM', 'Incident Response', 'Security Auditing', 'Vulnerability Assessment', 'Ethical Hacking'],
-    'GRC': ['Risk Management', 'ISO 27001 Implementation', 'NIST Framework', 'Policy Development', 'Compliance Auditing'],
-    'Networking': ['TCP/IP', 'VLANs', 'Routing & Switching', 'Network Security', 'Firewall Configuration', 'VPN'],
-    'IT Infrastructure': ['Windows Server', 'Linux Administration', 'Active Directory', 'Cloud Infrastructure', 'System Hardening'],
-    'AI & Data': ['Python', 'Machine Learning', 'TensorFlow', 'Data Analytics', 'Security Automation'],
-    'Project Management': ['Agile', 'SDLC', 'Stakeholder Management', 'Digital Marketing', 'Team Leadership'],
-  };
-
   return (
     <div style={{ background: C.bg0, color: C.text, fontFamily: 'Inter, sans-serif', minHeight: '100vh', overflowX: 'hidden' }}>
 
@@ -590,26 +500,7 @@ export default function App() {
         <div className="max-w-4xl mx-auto">
           <SectionHeading>{t.eduHeading}</SectionHeading>
           <div className="space-y-6">
-            {[
-              {
-                degree: 'Bachelor of Computer Science',
-                institution: 'Iqra University',
-                period: '2023 – 2027',
-                detail: 'Grade: B · Specialization in Cybersecurity, GRC, IT Infrastructure & Networking. Active in software development, data structures, algorithms, and AI projects applying theoretical knowledge to real-world problems.',
-              },
-              {
-                degree: 'Diploma of Associate Engineering in Computer Information Technology',
-                institution: 'Iqra College of Technology & Skills (under International Islamic University, Islamabad)',
-                period: 'Jan 2019 – Jun 2022',
-                detail: 'Grade: B · Rigorous curriculum combining in-depth theoretical knowledge with extensive practical applications. Developed proficiency in C++, Java, and Python, with a strong focus on hardware, networking, and IT systems.',
-              },
-              {
-                degree: 'Diploma in Human Resources Management and Services',
-                institution: 'Alison',
-                period: 'Apr 2024 – Present',
-                detail: 'Grade: Pass · Focus on employee relations, recruitment, performance management, and strategic HR planning. Applied theoretical knowledge to complex organizational dynamics and HR challenges.',
-              },
-            ].map((edu, i) => (
+            {t.education.map((edu, i) => (
               <Card key={i} delay={i * 0.1}>
                 <div className="flex gap-5 items-start">
                   <div className="flex-shrink-0">
@@ -746,7 +637,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto">
           <SectionHeading>{t.projHeading}</SectionHeading>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((p, i) => (
+            {t.projects.map((p, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 24 }}
@@ -788,7 +679,7 @@ export default function App() {
         <div className="max-w-4xl mx-auto">
           <SectionHeading>{t.expHeading}</SectionHeading>
           <div className="relative pl-6 border-l" style={{ borderColor: C.border }}>
-            {experiences.map((exp, i) => (
+            {t.experiences.map((exp, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, x: -20 }}
@@ -833,7 +724,7 @@ export default function App() {
         <div className="max-w-6xl mx-auto">
           <SectionHeading>{t.skillsHeading}</SectionHeading>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Object.entries(skills).map(([cat, list], i) => (
+            {Object.entries(t.skills).map(([cat, list], i) => (
               <motion.div
                 key={cat}
                 initial={{ opacity: 0, y: 20 }}
@@ -866,12 +757,7 @@ export default function App() {
               {t.coreCompHeading}
             </h3>
             <div className="flex flex-wrap gap-2">
-              {[
-                'IT Support & Troubleshooting', 'Network Administration', 'Cloud Computing',
-                'Cybersecurity & Threat Management', 'ISO 27001 Implementation', 'Digital Marketing',
-                'Social Media Management', 'Business Intelligence', 'IT Project Management',
-                'AI & Emerging Technologies', 'Cross-functional Team Collaboration', 'Stakeholder Management',
-              ].map((c, ci) => <Tag key={ci}>{c}</Tag>)}
+              {t.coreCompetencies.map((c, ci) => <Tag key={ci}>{c}</Tag>)}
             </div>
           </motion.div>
         </div>
