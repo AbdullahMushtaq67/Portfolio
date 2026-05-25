@@ -876,7 +876,7 @@ export default function App() {
             {[
               { icon: Mail,     label: 'Email',    href: 'mailto:abdullah.mushtaq6876@gmail.com' },
               { icon: Linkedin, label: 'LinkedIn', href: 'https://www.linkedin.com/in/abdullah-mohammad-mushtaq/' },
-              { icon: Github,   label: 'GitHub',   href: 'https://github.com' },
+              { icon: Github,   label: 'GitHub',   href: 'https://github.com/AbdullahMushtaq67' },
             ].map((s, i) => (
               <motion.a
                 key={i}
