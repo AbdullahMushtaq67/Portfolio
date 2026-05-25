@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'motion/react';
 import { Mail, Linkedin, Github, ChevronDown, MapPin, Calendar, ImagePlus, User } from 'lucide-react';
+import { translations, Lang } from './translations';
 
 // ─── Palette ───────────────────────────────────────────────────────────────
 const C = {
@@ -218,6 +219,14 @@ function Tag({ children }: { children: React.ReactNode }) {
 // ─── Main App ───────────────────────────────────────────────────────────────
 export default function App() {
   const [expandedCert, setExpandedCert] = useState<string | null>(null);
+  const [lang, setLang] = useState<Lang>('en');
+
+  const t = translations[lang];
+
+  useEffect(() => {
+    document.documentElement.setAttribute('dir', t.dir);
+    document.documentElement.setAttribute('lang', lang);
+  }, [lang, t.dir]);
 
   const scrollTo = (id: string) =>
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -407,7 +416,7 @@ export default function App() {
           <span style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 700, fontSize: '1.2rem', color: C.accent, letterSpacing: '0.1em' }}>
             AMM
           </span>
-          <div className="hidden md:flex gap-7 text-xs">
+          <div className="hidden md:flex items-center gap-7 text-xs">
             {NAV.map(s => (
               <button
                 key={s}
@@ -415,9 +424,28 @@ export default function App() {
                 style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 500, letterSpacing: '0.1em', color: C.muted, textTransform: 'uppercase' }}
                 className="hover:text-white transition-colors"
               >
-                {s.replace('-', ' ')}
+                {t.navLabels[s as keyof typeof t.navLabels] ?? s}
               </button>
             ))}
+            {/* Language Switcher */}
+            <div className="flex items-center gap-1 ms-4 border-s ps-4" style={{ borderColor: C.border }}>
+              {(['en', 'ar', 'de'] as Lang[]).map(l => (
+                <button
+                  key={l}
+                  onClick={() => setLang(l)}
+                  className="px-2 py-0.5 rounded text-xs font-semibold transition-all"
+                  style={{
+                    fontFamily: 'Oswald, sans-serif',
+                    letterSpacing: '0.08em',
+                    background: lang === l ? C.accent : 'transparent',
+                    color: lang === l ? '#fff' : C.faint,
+                    border: `1px solid ${lang === l ? C.accent : 'transparent'}`,
+                  }}
+                >
+                  {l.toUpperCase()}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </motion.nav>
@@ -427,7 +455,7 @@ export default function App() {
         <div className="text-center px-6 relative z-10">
           <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9 }}>
             <div className="mb-3 text-xs tracking-widest uppercase" style={{ color: C.accent, fontFamily: 'Oswald, sans-serif' }}>
-              Cybersecurity · GRC · IT Infrastructure
+              {t.heroTagline}
             </div>
             <h1
               style={{
@@ -449,12 +477,10 @@ export default function App() {
 
           <motion.p
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 0.8 }}
-            className="mt-6 mb-10 text-base md:text-lg max-w-xl mx-auto leading-relaxed"
+            className="mt-6 mb-10 text-base md:text-lg max-w-2xl mx-auto leading-relaxed"
             style={{ color: C.muted }}
           >
-            IT Infrastructure &amp; Cybersecurity Engineer · ISO/IEC 27001:2022 Lead Auditor
-            <br />
-            GRC · Cloud &amp; Network Architect · Certified Project Manager
+            {t.heroSubtitle}
           </motion.p>
 
           <motion.div
@@ -472,7 +498,7 @@ export default function App() {
               onMouseEnter={e => (e.currentTarget.style.background = C.accentHi)}
               onMouseLeave={e => (e.currentTarget.style.background = C.accent)}
             >
-              Get In Touch
+              {t.heroCta1}
             </button>
             <button
               onClick={() => scrollTo('projects')}
@@ -486,7 +512,7 @@ export default function App() {
               onMouseEnter={e => { e.currentTarget.style.borderColor = C.accent; e.currentTarget.style.color = C.text; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.muted; }}
             >
-              View Projects
+              {t.heroCta2}
             </button>
           </motion.div>
 
@@ -505,14 +531,10 @@ export default function App() {
       {/* ── About ── */}
       <section id="about" className="py-28 px-6 relative" style={{ background: C.bg1, zIndex: 1 }}>
         <div className="max-w-6xl mx-auto">
-          <SectionHeading>About Me</SectionHeading>
+          <SectionHeading>{t.aboutHeading}</SectionHeading>
           <div className="grid md:grid-cols-3 gap-10 items-start">
             <div className="md:col-span-2 space-y-5">
-              {[
-                'Ambitious IT professional with a strong focus on Networking, Cloud, and Cybersecurity, backed by solid hands-on experience in Governance, Risk, and Compliance (GRC). Committed to delivering secure, high-performance, and future-ready IT solutions that align with regulatory frameworks and drive operational success.',
-                'With certifications spanning IBM, Google, Microsoft, Oracle, Cisco, and more — including ISO/IEC 27001:2022 Lead Auditor and NEBOSH IGC — I bring both breadth and depth to every engagement.',
-                'Currently pursuing a Bachelor of Computer Science at Iqra University, I continuously bridge academic theory with practical real-world implementation across security operations, network design, and AI-driven tooling.',
-              ].map((p, i) => (
+              {[t.aboutP1, t.aboutP2, t.aboutP3].map((p, i) => (
                 <motion.p
                   key={i}
                   initial={{ opacity: 0, x: -20 }}
@@ -539,12 +561,12 @@ export default function App() {
               </div>
               <div className="space-y-3 text-sm" style={{ color: C.muted }}>
                 {[
-                  { label: 'Location', value: 'Bahrain / Pakistan' },
-                  { label: 'Email', value: 'abdullah.mushtaq6876@gmail.com' },
-                  { label: 'LinkedIn', value: 'in/abdullah-mohammad-mushtaq', link: 'https://www.linkedin.com/in/abdullah-mohammad-mushtaq/' },
-                  { label: 'Certifications', value: '46+' },
-                  { label: 'Experience', value: '4+ Years' },
-                  { label: 'Languages', value: 'EN · AR · UR · PK · HI · PS' },
+                  { label: t.aboutLocation, value: t.aboutLocationVal },
+                  { label: t.aboutEmail, value: 'abdullah.mushtaq6876@gmail.com' },
+                  { label: t.aboutLinkedIn, value: t.aboutLinkedInVal, link: 'https://www.linkedin.com/in/abdullah-mohammad-mushtaq/' },
+                  { label: t.aboutCerts, value: t.aboutCertsVal },
+                  { label: t.aboutExp, value: t.aboutExpVal },
+                  { label: t.aboutLangs, value: t.aboutLangsVal },
                 ].map(r => (
                   <div key={r.label} className="flex justify-between gap-4">
                     <span style={{ color: C.faint }}>{r.label}</span>
@@ -566,7 +588,7 @@ export default function App() {
       {/* ── Education ── */}
       <section id="education" className="py-28 px-6 relative" style={{ background: C.bg2, zIndex: 1 }}>
         <div className="max-w-4xl mx-auto">
-          <SectionHeading>Education</SectionHeading>
+          <SectionHeading>{t.eduHeading}</SectionHeading>
           <div className="space-y-6">
             {[
               {
@@ -617,15 +639,15 @@ export default function App() {
       {/* ── Achievements ── */}
       <section id="achievements" className="py-28 px-6 relative" style={{ background: C.bg1, zIndex: 1 }}>
         <div className="max-w-6xl mx-auto">
-          <SectionHeading>Achievements</SectionHeading>
+          <SectionHeading>{t.achHeading}</SectionHeading>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
             {[
-              { number: '46+',  label: 'Professional Certifications' },
-              { number: '6',    label: 'Projects Delivered' },
-              { number: '4+',   label: 'Years of Experience' },
-              { number: '15+',  label: 'Industry Tools Mastered' },
-              { number: '6',    label: 'Languages Spoken' },
-              { number: '85%',  label: 'Paperwork Reduced via Automation' },
+              { number: '46+',  idx: 0 },
+              { number: '6',    idx: 1 },
+              { number: '4+',   idx: 2 },
+              { number: '15+',  idx: 3 },
+              { number: '6',    idx: 4 },
+              { number: '85%',  idx: 5 },
             ].map((a, i) => (
               <motion.div
                 key={i}
@@ -650,7 +672,7 @@ export default function App() {
                   >
                     {a.number}
                   </div>
-                  <div className="mt-2 text-sm" style={{ color: C.muted }}>{a.label}</div>
+                  <div className="mt-2 text-sm" style={{ color: C.muted }}>{t.achLabels[a.idx]}</div>
                 </div>
               </motion.div>
             ))}
@@ -663,7 +685,7 @@ export default function App() {
       {/* ── Certifications ── */}
       <section id="certifications" className="py-28 px-6 relative" style={{ background: C.bg2, zIndex: 1 }}>
         <div className="max-w-7xl mx-auto">
-          <SectionHeading>Certifications</SectionHeading>
+          <SectionHeading>{t.certHeading}</SectionHeading>
           <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
             {Object.entries(certifications).map(([issuer, certs], i) => (
               <motion.div
@@ -722,7 +744,7 @@ export default function App() {
       {/* ── Projects ── */}
       <section id="projects" className="py-28 px-6 relative" style={{ background: C.bg1, zIndex: 1 }}>
         <div className="max-w-7xl mx-auto">
-          <SectionHeading>Projects</SectionHeading>
+          <SectionHeading>{t.projHeading}</SectionHeading>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {projects.map((p, i) => (
               <motion.div
@@ -764,7 +786,7 @@ export default function App() {
       {/* ── Experience ── */}
       <section id="experience" className="py-28 px-6 relative" style={{ background: C.bg2, zIndex: 1 }}>
         <div className="max-w-4xl mx-auto">
-          <SectionHeading>Experience</SectionHeading>
+          <SectionHeading>{t.expHeading}</SectionHeading>
           <div className="relative pl-6 border-l" style={{ borderColor: C.border }}>
             {experiences.map((exp, i) => (
               <motion.div
@@ -809,7 +831,7 @@ export default function App() {
       {/* ── Skills ── */}
       <section id="skills" className="py-28 px-6 relative" style={{ background: C.bg1, zIndex: 1 }}>
         <div className="max-w-6xl mx-auto">
-          <SectionHeading>Skills</SectionHeading>
+          <SectionHeading>{t.skillsHeading}</SectionHeading>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Object.entries(skills).map(([cat, list], i) => (
               <motion.div
@@ -841,7 +863,7 @@ export default function App() {
             style={{ background: C.card, border: `1px solid ${C.border}` }}
           >
             <h3 className="mb-4 uppercase tracking-wider text-sm" style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, color: C.accent }}>
-              Core Competencies
+              {t.coreCompHeading}
             </h3>
             <div className="flex flex-wrap gap-2">
               {[
@@ -860,13 +882,13 @@ export default function App() {
       {/* ── Contact ── */}
       <section id="contact" className="py-28 px-6 relative" style={{ background: C.bg2, zIndex: 1 }}>
         <div className="max-w-2xl mx-auto text-center">
-          <SectionHeading>Let's Connect</SectionHeading>
+          <SectionHeading>{t.contactHeading}</SectionHeading>
           <motion.p
             initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
             className="mb-10 leading-relaxed"
             style={{ color: C.muted }}
           >
-            Open to cybersecurity opportunities, GRC consulting, network architecture projects, or knowledge exchange. Reach out through any channel below.
+            {t.contactDesc}
           </motion.p>
 
           <motion.div
@@ -914,11 +936,11 @@ export default function App() {
             }}
             whileHover={{ backgroundColor: C.accentHi } as any}
           >
-            Send Message
+            {t.contactCta}
           </motion.a>
 
           <p className="mt-14 text-xs" style={{ color: C.faint }}>
-            © 2026 Abdullah Mohammad Mushtaq · All rights reserved.
+            {t.contactFooter}
           </p>
         </div>
       </section>
