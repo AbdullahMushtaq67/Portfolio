@@ -1,72 +1,266 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'motion/react';
-import { Mail, Linkedin, Github, ChevronDown } from 'lucide-react';
+import { Mail, Linkedin, Github, ChevronDown, MapPin, Calendar } from 'lucide-react';
 
-export default function App() {
-  const [expandedCert, setExpandedCert] = useState<string | null>(null);
-  const [scrollY, setScrollY] = useState(0);
+// ─── Palette ───────────────────────────────────────────────────────────────
+const C = {
+  bg0:      '#0b1120',
+  bg1:      '#101624',
+  bg2:      '#141c2e',
+  card:     '#1a2236',
+  border:   '#253044',
+  accent:   '#3e7cb1',
+  accentHi: '#5a9fd4',
+  text:     '#e0e6ed',
+  muted:    '#b8c1d1',
+  faint:    '#7a8ba0',
+};
 
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+// ─── Animated Network Canvas ────────────────────────────────────────────────
+function NetworkCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animRef = useRef<number>(0);
+
+  const init = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const NODE_COUNT = 55;
+    const MAX_DIST = 160;
+
+    interface Node {
+      x: number; y: number;
+      vx: number; vy: number;
+      r: number;
+    }
+
+    const nodes: Node[] = Array.from({ length: NODE_COUNT }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 1.5 + 1,
+    }));
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (const n of nodes) {
+        n.x += n.vx;
+        n.y += n.vy;
+        if (n.x < 0 || n.x > canvas.width)  n.vx *= -1;
+        if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+      }
+
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const dx = nodes[i].x - nodes[j].x;
+          const dy = nodes[i].y - nodes[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < MAX_DIST) {
+            const alpha = (1 - dist / MAX_DIST) * 0.18;
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(62,124,177,${alpha})`;
+            ctx.lineWidth = 0.8;
+            ctx.moveTo(nodes[i].x, nodes[i].y);
+            ctx.lineTo(nodes[j].x, nodes[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      for (const n of nodes) {
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(90,159,212,0.55)';
+        ctx.fill();
+      }
+
+      animRef.current = requestAnimationFrame(draw);
+    };
+
+    draw();
+    return () => {
+      cancelAnimationFrame(animRef.current);
+      window.removeEventListener('resize', resize);
+    };
   }, []);
 
-  const scrollToSection = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-  };
+  useEffect(() => {
+    const cleanup = init();
+    return cleanup;
+  }, [init]);
 
-  const certifications = {
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 pointer-events-none"
+      style={{ zIndex: 0, opacity: 0.9 }}
+    />
+  );
+}
+
+// ─── Section Heading ────────────────────────────────────────────────────────
+function SectionHeading({ children }: { children: React.ReactNode }) {
+  return (
+    <motion.h2
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6 }}
+      className="text-center mb-16 uppercase tracking-widest"
+      style={{
+        fontFamily: 'Oswald, sans-serif',
+        fontSize: 'clamp(2rem, 4vw, 3rem)',
+        fontWeight: 700,
+        color: C.text,
+        letterSpacing: '0.12em',
+      }}
+    >
+      <span style={{ borderBottom: `3px solid ${C.accent}`, paddingBottom: '8px' }}>
+        {children}
+      </span>
+    </motion.h2>
+  );
+}
+
+// ─── Divider ────────────────────────────────────────────────────────────────
+function Divider() {
+  return (
+    <div style={{ height: '1px', background: `linear-gradient(90deg, transparent, ${C.border}, transparent)` }} />
+  );
+}
+
+// ─── Card ───────────────────────────────────────────────────────────────────
+function Card({ children, className = '', delay = 0, hover = true }: {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+  hover?: boolean;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay }}
+      whileHover={hover ? { y: -4, borderColor: C.accentHi } : undefined}
+      className={`rounded-xl p-7 ${className}`}
+      style={{
+        background: C.card,
+        border: `1px solid ${C.border}`,
+        transition: 'border-color 0.2s',
+      }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+// ─── Tag ────────────────────────────────────────────────────────────────────
+function Tag({ children }: { children: React.ReactNode }) {
+  return (
+    <span
+      className="px-2.5 py-1 rounded text-xs font-medium"
+      style={{
+        background: `${C.accent}22`,
+        color: C.accentHi,
+        border: `1px solid ${C.accent}44`,
+        fontFamily: 'Inter, sans-serif',
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
+// ─── Main App ───────────────────────────────────────────────────────────────
+export default function App() {
+  const [expandedCert, setExpandedCert] = useState<string | null>(null);
+
+  const scrollTo = (id: string) =>
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+
+  const NAV = ['home', 'about', 'education', 'achievements', 'certifications', 'projects', 'experience', 'skills', 'contact'];
+
+  const certifications: Record<string, string[]> = {
     IBM: [
-      'Cybersecurity Analyst Professional Certificate',
-      'Threat Intelligence Analyst',
-      'Penetration Testing and Incident Response',
-      'Compliance Framework & System Administration'
-    ],
-    Google: [
-      'Cybersecurity Professional Certificate',
       'IT Support Professional Certificate',
-      'Data Analytics Professional Certificate'
+      'Cybersecurity Analyst Professional Certificate',
+      'Business Intelligence Analyst',
+      'Certified Data Analyst',
+      'IT Project Manager',
+      'System Analyst',
+      'AI Product Manager',
+      'AI Developer',
+      'Data Management',
+      'Project Manager',
     ],
     Microsoft: [
-      'Azure Fundamentals (AZ-900)',
-      'Security, Compliance, and Identity Fundamentals (SC-900)',
-      'Azure AI Fundamentals (AI-900)'
+      'IT Support Specialist',
+      'Cybersecurity Analyst',
+      'Program Management',
+      'AI Product Manager',
     ],
-    Oracle: [
-      'Oracle Cloud Infrastructure Foundations',
-      'Oracle Database SQL Certified Associate'
+    Google: [
+      'AI Professional Certification',
+      'Cloud Network Engineer',
+      'Networking in Google Cloud',
+      'IT Support Professional Certificate',
+      'Project Management Professional Certificate',
+      'Digital Marketing Certification',
+      'Cloud Certification Engineer Preparation',
+      'Cybersecurity V2',
     ],
     Cisco: [
       'Introduction to Cybersecurity',
-      'Networking Basics',
-      'Cybersecurity Essentials',
-      'Network Defense'
+      'Ethical Hacking',
+    ],
+    Oracle: [
+      'OCI 2025 Certified Foundations Associate',
+      'OCI 2025 Certified AI Foundations Associate',
+      'Oracle Certified Foundations Associate',
+      'AI Vector Search Certified Professional',
+      'OCI Certified Generative AI Professional',
     ],
     'HP Life': [
-      'Digital Literacy',
-      'IT Project Management',
-      'Business Strategy and Leadership'
+      'Cybersecurity Awareness',
+      'Certified Ethical Hacking Awareness',
+      'Project Management Specialization',
     ],
-    OPSWAT: [
-      'Introduction to Critical Infrastructure Protection (ICIP)',
-      'Critical Infrastructure Security Professional'
-    ],
+    OPSWAT: ['Critical Infrastructure Protection'],
     Rutgers: [
-      'Cybersecurity Foundations',
-      'Network Security & Database Vulnerabilities'
+      'Advanced Global Procurement & Sourcing Specialization',
+      'Global Procurement & Sourcing Specialization',
+      'Supply Chain Management Specialization',
     ],
-    'EC-Council': [
-      'Ethical Hacking Essentials',
-      'Network Defense Essentials',
-      'Digital Forensics Essentials'
+    'EU Cyber Academy': [
+      'CSCSO – Certified SME Cyber Security Officer',
+      'CRPO – Certified Ransomware Protection Officer',
     ],
-    'ISC2': [
-      'Certified in Cybersecurity (CC)'
+    'ISC2': ['Cybersecurity Specialist (CC)'],
+    'EC-Council': ['Cybersecurity for Businesses'],
+    NEBOSH: ['International General Certificate in Occupational Health and Safety'],
+    LEORON: ['ACGRC – Advanced Certificate in Governance, Risk and Compliance'],
+    'ISO/IEC': ['ISO/IEC 27001:2022 Lead Auditor'],
+    'Govt. of Punjab': ['Certified Ethical Hacker'],
+    Other: [
+      'ADP – Payroll Specialist',
+      'Unilever – Supply Chain Data Analyst',
+      'Univ. of Minnesota – Human Resource Management',
+      'HRCI – Human Resource Associate',
+      'Univ. of Maryland – Cybersecurity in the AI Era',
+      'Alison – Diploma in Human Resources Management',
     ],
-    NEBOSH: [
-      'International General Certificate in Occupational Health and Safety'
-    ]
   };
 
   const projects = [
@@ -75,41 +269,41 @@ export default function App() {
       date: 'Feb 2026',
       association: 'Iqra University',
       stack: ['Python', 'TensorFlow/Keras', 'MobileNetV2', 'OpenCV', 'Streamlit', 'NumPy'],
-      description: 'Deep learning-powered system to identify diseases in plant leaves and suggest treatments. Trained on 16,000+ images using the PlantVillage dataset with MobileNetV2 transfer learning. Outputs disease predictions with confidence scores via a Streamlit web app, enabling early detection for farmers and agritech professionals.'
+      description: 'Deep learning system to identify diseases in plant leaves using MobileNetV2 transfer learning on 16,000+ PlantVillage images. Outputs disease predictions with confidence scores via a Streamlit web app, enabling early detection for farmers and agritech professionals.',
     },
     {
       title: 'ClimaCast – Weather Forecasting PWA & Android App',
       date: 'Jan 2026',
       association: 'Iqra University',
       stack: ['React', 'TypeScript', 'Tailwind CSS', 'Capacitor', 'PWA', 'Weather API'],
-      description: 'Modern responsive weather forecasting app built as a Progressive Web App and deployed as an Android APK using a single shared codebase. Delivers real-time updates, hourly/daily forecasts, location detection, offline functionality via service workers, and favorite city management.'
+      description: 'Responsive weather forecasting app built as a Progressive Web App and packaged into a native Android APK. Delivers real-time updates, hourly/daily forecasts, location detection, offline caching via service workers, and favorite city management.',
     },
     {
       title: 'Smart Encryption Web App',
       date: 'Sep 2025',
       association: 'Iqra University',
-      stack: ['Python', 'Flask', 'HTML', 'CSS', 'JavaScript', 'AES/Fernet'],
-      description: 'Web application for encryption and decryption featuring AES (Fernet) for strong security, Caesar Cipher encoding/decoding, and drag-and-drop file processing. Built to demonstrate cryptography in a user-friendly web environment for personal, academic, and professional use.'
+      stack: ['Python', 'Flask', 'JavaScript', 'AES/Fernet', 'Caesar Cipher'],
+      description: 'Web application for encryption and decryption featuring AES (Fernet) symmetric encryption, Caesar Cipher encoding, and drag-and-drop file processing. Demonstrates applied cryptography in a practical, user-friendly interface.',
     },
     {
       title: 'Simulated Phishing & Keylogging Attack Demo',
       date: 'Aug 2025',
-      stack: ['Cybersecurity', 'Threat Emulation', 'Security Awareness', 'Risk Mitigation'],
-      description: 'Awareness project demonstrating a simulated phishing attack and keylogging to highlight human-error vulnerabilities. Created visually engaging training content on identifying fake login portals, advocating for MFA and URL verification, fostering a security-first culture.'
+      stack: ['Threat Emulation', 'Security Awareness', 'MFA Advocacy', 'Risk Mitigation'],
+      description: 'Cybersecurity awareness project simulating a phishing attack and keylogging demonstration to highlight human-error vulnerabilities. Produced training content on identifying fake login portals, URL verification, and building a security-first culture.',
     },
     {
       title: 'Enterprise-Level Multi-Protocol Network Design',
       date: 'Apr 2025',
       association: 'Iqra University',
       stack: ['Cisco Packet Tracer', 'OSPF', 'EIGRP', 'RIP', 'VLANs', 'DHCP'],
-      description: 'Designed and implemented a large-scale enterprise network topology integrating RIP, OSPF (Multi-Area), and EIGRP protocols. Features hierarchical network design, wireless access points, Mail/DHCP server configuration, redundancy for fault tolerance, and proper subnetting across multiple departments.'
+      description: 'Large-scale enterprise network topology integrating RIP, OSPF (Multi-Area), and EIGRP routing protocols. Features hierarchical LAN/WAN design, wireless access, Mail/DHCP servers, redundant paths for fault tolerance, and proper subnetting.',
     },
     {
       title: 'Auto Paper Formation Software',
       date: 'Feb 2025',
       stack: ['Automation', 'PDF/DOCX Export', 'LMS Integration', 'Access Control'],
-      description: 'Software that revolutionizes question paper creation through automation. Features dynamic question bank management, randomized paper generation, multi-format export (PDF, DOCX), user roles & access control, and LMS/SIS integration. Reduced paperwork by 85% and improved efficiency by 95%.'
-    }
+      description: 'Educational software automating question paper creation with dynamic question banks, randomized generation, multi-format export (PDF, DOCX), user roles & access control, and LMS/SIS integration. Reduced paperwork by 85% and improved efficiency by 95%.',
+    },
   ];
 
   const experiences = [
@@ -118,783 +312,557 @@ export default function App() {
       company: 'Al Mahira Workshop W.L.L',
       period: 'Jan 2025 – Present',
       location: 'Tubli, Bahrain · Hybrid',
-      description: 'Overseeing IT systems to ensure seamless operations and implementing technology solutions for business needs. Leading digital marketing strategies including social media management and brand development. Coordinating between technical and marketing teams to align objectives with technology-driven growth.'
+      description: 'Overseeing IT systems to ensure seamless operations and implementing technology solutions for business needs. Leading digital marketing strategies including social media management and brand development. Coordinating between technical and marketing teams to align objectives with technology-driven growth.',
     },
     {
       role: 'IT Support & Administrative Assistant',
       company: 'Uni Technical Services',
       period: 'Jan 2024 – Dec 2024',
       location: 'Dubai, UAE · Remote',
-      description: 'Delivered comprehensive IT support by troubleshooting technical issues and assisting users with hardware and software problems. Managed administrative tasks including scheduling, record-keeping, and communications. Coordinated office operations to support team workflows and ensure smooth day-to-day functionality.'
+      description: 'Delivered comprehensive IT support by troubleshooting technical issues and assisting users with hardware and software problems. Managed administrative tasks including scheduling, record-keeping, and communications to enhance operational efficiency.',
     },
     {
       role: 'Ambassador',
       company: 'Volunteer Force Pakistan (clcglobally)',
       period: 'Jul 2024 – Oct 2024',
       location: 'Islamabad, Pakistan · Internship',
-      description: 'Assisted in event planning and coordination for national-level initiatives. Supported project operations through communication and logistics tasks. Ensured smooth execution of conferences with attention to detail. Received Certificate of Appreciation for contributions at the Creative Leadership Conference.'
+      description: 'Assisted in event planning and coordination for national-level initiatives. Supported project operations through communication and logistics tasks. Received Certificate of Appreciation for contributions at the Creative Leadership Conference.',
     },
     {
       role: 'Information Technology Consultant',
       company: 'Naqvi Associates',
       period: 'Jul 2022 – Dec 2023',
       location: 'Islamabad, Pakistan · On-site',
-      description: 'Provided expert technical consulting and support to enhance IT systems and workflows for clients. Assisted in implementing digital solutions including system upgrades and troubleshooting processes. Collaborated on digital marketing initiatives to support online platforms and drive business growth.'
+      description: 'Provided expert technical consulting to enhance IT systems and workflows for clients. Implemented digital solutions including system upgrades and troubleshooting processes. Collaborated on digital marketing initiatives to support online platforms and drive business growth.',
     },
     {
       role: 'Information Technology Assistant',
       company: 'Naqvi Associates',
       period: 'Nov 2021 – Apr 2022',
       location: 'Islamabad, Pakistan · Internship',
-      description: 'Assisted in daily IT operations ensuring smooth system monitoring and basic troubleshooting. Provided technical guidance and support for end-users with hardware and software setups. Maintained IT documentation and coordinated small technical tasks within the team.'
-    }
+      description: 'Assisted in daily IT operations ensuring smooth system monitoring and basic troubleshooting. Provided technical guidance for end-users with hardware and software setups. Maintained IT documentation and coordinated small technical tasks within the team.',
+    },
   ];
 
-  const skills = {
-    'Cybersecurity': ['Penetration Testing', 'Threat Intelligence', 'SIEM', 'Incident Response', 'Security Auditing', 'Vulnerability Assessment'],
-    'GRC': ['Risk Management', 'Compliance (NIST, ISO 27001)', 'Policy Development', 'Security Frameworks', 'Audit & Assessment'],
+  const skills: Record<string, string[]> = {
+    'Cybersecurity': ['Threat Intelligence', 'SIEM', 'Incident Response', 'Security Auditing', 'Vulnerability Assessment', 'Ethical Hacking'],
+    'GRC': ['Risk Management', 'ISO 27001 Implementation', 'NIST Framework', 'Policy Development', 'Compliance Auditing'],
     'Networking': ['TCP/IP', 'VLANs', 'Routing & Switching', 'Network Security', 'Firewall Configuration', 'VPN'],
     'IT Infrastructure': ['Windows Server', 'Linux Administration', 'Active Directory', 'Cloud Infrastructure', 'System Hardening'],
-    'AI & Data': ['Python', 'Machine Learning', 'Data Analytics', 'Threat Modeling', 'Security Automation'],
-    'Project Management': ['Agile', 'SDLC', 'Documentation', 'Team Collaboration', 'Stakeholder Management']
+    'AI & Data': ['Python', 'Machine Learning', 'TensorFlow', 'Data Analytics', 'Security Automation'],
+    'Project Management': ['Agile', 'SDLC', 'Stakeholder Management', 'Digital Marketing', 'Team Leadership'],
   };
 
   return (
-    <div className="min-h-screen bg-black overflow-x-hidden" style={{ fontFamily: 'Tenor Sans, sans-serif' }}>
-      {/* Animated Background Grid */}
-      <div className="fixed inset-0 opacity-5 pointer-events-none">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `
-            linear-gradient(#029AFF 1px, transparent 1px),
-            linear-gradient(90deg, #029AFF 1px, transparent 1px)
-          `,
-          backgroundSize: '50px 50px'
-        }} />
-      </div>
+    <div style={{ background: C.bg0, color: C.text, fontFamily: 'Inter, sans-serif', minHeight: '100vh', overflowX: 'hidden' }}>
 
-      {/* Navbar */}
+      {/* Animated Network Background */}
+      <NetworkCanvas />
+
+      {/* ── Navbar ── */}
       <motion.nav
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-lg"
+        initial={{ y: -60, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        className="fixed top-0 left-0 right-0 z-50"
         style={{
-          borderBottom: '1px solid transparent',
-          borderImage: 'linear-gradient(90deg, #04044A 0%, #029AFF 25%, #00FFFF 50%, #029AFF 75%, #04044A 100%) 1'
+          background: `${C.bg0}e8`,
+          backdropFilter: 'blur(14px)',
+          borderBottom: `1px solid ${C.border}`,
         }}
       >
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <motion.div
-            className="text-xl tracking-widest text-[#00FFFF]"
-            style={{ fontFamily: 'Suranna, serif' }}
-            whileHover={{ textShadow: '0 0 20px #00FFFF' }}
-          >
+          <span style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 700, fontSize: '1.2rem', color: C.accent, letterSpacing: '0.1em' }}>
             AMM
-          </motion.div>
-          <div className="flex gap-8 text-sm">
-            {['home', 'about', 'education', 'achievements', 'certifications', 'projects', 'experience', 'skills', 'contact'].map((section) => (
-              <motion.button
-                key={section}
-                onClick={() => scrollToSection(section)}
-                className="text-white/80 hover:text-[#00FFFF] transition-colors uppercase tracking-wider"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+          </span>
+          <div className="hidden md:flex gap-7 text-xs">
+            {NAV.map(s => (
+              <button
+                key={s}
+                onClick={() => scrollTo(s)}
+                style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 500, letterSpacing: '0.1em', color: C.muted, textTransform: 'uppercase' }}
+                className="hover:text-white transition-colors"
               >
-                {section.replace('-', ' ')}
-              </motion.button>
+                {s.replace('-', ' ')}
+              </button>
             ))}
           </div>
         </div>
       </motion.nav>
 
-      {/* Hero Section */}
-      <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden">
-        {/* Radial Gradient Background */}
-        <div className="absolute inset-0" style={{
-          background: 'radial-gradient(ellipse at center bottom, #029AFF 0%, #000675 40%, #000000 100%)'
-        }} />
-
-        {/* Floating Particles */}
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 bg-[#00FFFF] rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -30, 0],
-              opacity: [0.2, 1, 0.2],
-            }}
-            transition={{
-              duration: 3 + Math.random() * 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-            }}
-          />
-        ))}
-
-        <div className="relative z-10 text-center px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-          >
-            <motion.h1
-              className="text-7xl md:text-9xl mb-6 text-white tracking-wide"
+      {/* ── Hero ── */}
+      <section id="home" className="min-h-screen flex items-center justify-center relative" style={{ zIndex: 1 }}>
+        <div className="text-center px-6 relative z-10">
+          <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9 }}>
+            <div className="mb-3 text-xs tracking-widest uppercase" style={{ color: C.accent, fontFamily: 'Oswald, sans-serif' }}>
+              Cybersecurity · GRC · IT Infrastructure
+            </div>
+            <h1
               style={{
-                fontFamily: 'Suranna, serif',
-                textShadow: '0 0 40px #00FFFF, 0 0 80px #00FFFF, 0 0 120px #00FFFF'
+                fontFamily: 'Oswald, sans-serif',
+                fontWeight: 700,
+                fontSize: 'clamp(3rem, 9vw, 7rem)',
+                color: C.text,
+                letterSpacing: '0.04em',
+                lineHeight: 1.05,
               }}
-              animate={{
-                textShadow: [
-                  '0 0 40px #00FFFF, 0 0 80px #00FFFF',
-                  '0 0 60px #00FFFF, 0 0 120px #00FFFF',
-                  '0 0 40px #00FFFF, 0 0 80px #00FFFF'
-                ]
-              }}
-              transition={{ duration: 3, repeat: Infinity }}
             >
-              <span className="text-[#00FFFF]">Abdullah Mohammad</span>
+              ABDULLAH
               <br />
-              <span className="text-[#00FFFF]">Mushtaq</span>
-            </motion.h1>
+              <span style={{ color: C.accent }}>MOHAMMAD</span>
+              <br />
+              MUSHTAQ
+            </h1>
           </motion.div>
 
           <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 1 }}
-            className="text-xl md:text-2xl text-white/90 mb-12 tracking-wide"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 0.8 }}
+            className="mt-6 mb-10 text-base md:text-lg max-w-xl mx-auto leading-relaxed"
+            style={{ color: C.muted }}
           >
-            BS Computer Science · Cybersecurity Specialist
+            IT Infrastructure &amp; Cybersecurity Engineer · ISO/IEC 27001:2022 Lead Auditor
             <br />
-            GRC · IT Infrastructure & Networking
+            GRC · Cloud &amp; Network Architect · Certified Project Manager
           </motion.p>
 
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 1, duration: 0.5 }}
-            onClick={() => scrollToSection('contact')}
-            className="px-12 py-4 rounded-full text-white font-semibold tracking-wider relative overflow-hidden group"
-            style={{
-              background: 'linear-gradient(135deg, #029AFF 0%, #00FFFF 100%)',
-              boxShadow: '0 0 30px rgba(0, 255, 255, 0.5)'
-            }}
-            whileHover={{
-              scale: 1.05,
-              boxShadow: '0 0 50px rgba(0, 255, 255, 0.8)'
-            }}
-            whileTap={{ scale: 0.95 }}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.9 }}
+            className="flex items-center justify-center gap-4"
           >
-            GET IN TOUCH
-          </motion.button>
+            <button
+              onClick={() => scrollTo('contact')}
+              className="px-8 py-3 rounded font-semibold tracking-widest text-sm uppercase transition-all"
+              style={{
+                fontFamily: 'Oswald, sans-serif',
+                background: C.accent,
+                color: '#fff',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = C.accentHi)}
+              onMouseLeave={e => (e.currentTarget.style.background = C.accent)}
+            >
+              Get In Touch
+            </button>
+            <button
+              onClick={() => scrollTo('projects')}
+              className="px-8 py-3 rounded font-semibold tracking-widest text-sm uppercase transition-all"
+              style={{
+                fontFamily: 'Oswald, sans-serif',
+                background: 'transparent',
+                border: `1px solid ${C.border}`,
+                color: C.muted,
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = C.accent; e.currentTarget.style.color = C.text; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.muted; }}
+            >
+              View Projects
+            </button>
+          </motion.div>
 
           <motion.div
-            className="absolute bottom-10 left-1/2 transform -translate-x-1/2"
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
+            className="absolute bottom-10 left-1/2 -translate-x-1/2"
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 2.2, repeat: Infinity }}
           >
-            <ChevronDown className="w-8 h-8 text-[#00FFFF]" />
+            <ChevronDown size={22} style={{ color: C.faint }} />
           </motion.div>
         </div>
       </section>
 
-      {/* Gradient Divider */}
-      <div className="h-1" style={{
-        background: 'linear-gradient(90deg, #04044A 0%, #029AFF 25%, #00FFFF 50%, #029AFF 75%, #04044A 100%)'
-      }} />
+      <Divider />
 
-      {/* About Me Section */}
-      <section id="about" className="min-h-screen flex items-center py-32 px-6" style={{ background: '#000675' }}>
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            <h2 className="text-6xl mb-8 text-[#00FFFF] tracking-wider" style={{ fontFamily: 'Suranna, serif' }}>
-              About Me
-            </h2>
-            <p className="text-white/80 text-lg leading-relaxed mb-6">
-              I am a dedicated Computer Science student with a specialized focus on Cybersecurity, Governance Risk & Compliance (GRC),
-              and IT Infrastructure & Networking. My passion lies in protecting digital assets and building resilient security architectures
-              that safeguard organizations against evolving cyber threats.
-            </p>
-            <p className="text-white/80 text-lg leading-relaxed mb-6">
-              With hands-on experience in penetration testing, incident response, and security framework implementation, I combine
-              theoretical knowledge with practical expertise. I am committed to continuous learning and staying ahead of the latest
-              security trends and technologies.
-            </p>
-            <p className="text-white/80 text-lg leading-relaxed">
-              My goal is to contribute to the cybersecurity field by developing innovative solutions that address complex security
-              challenges while ensuring compliance with industry standards and best practices.
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="relative"
-          >
-            <div
-              className="p-12 rounded-2xl backdrop-blur-xl"
-              style={{
-                background: 'linear-gradient(135deg, rgba(0, 6, 117, 0.6) 0%, rgba(4, 4, 74, 0.6) 100%)',
-                border: '2px solid #029AFF',
-                boxShadow: '0 0 40px rgba(2, 154, 255, 0.3)'
-              }}
+      {/* ── About ── */}
+      <section id="about" className="py-28 px-6 relative" style={{ background: C.bg1, zIndex: 1 }}>
+        <div className="max-w-6xl mx-auto">
+          <SectionHeading>About Me</SectionHeading>
+          <div className="grid md:grid-cols-3 gap-10 items-start">
+            <div className="md:col-span-2 space-y-5">
+              {[
+                'Ambitious IT professional with a strong focus on Networking, Cloud, and Cybersecurity, backed by solid hands-on experience in Governance, Risk, and Compliance (GRC). Committed to delivering secure, high-performance, and future-ready IT solutions that align with regulatory frameworks and drive operational success.',
+                'With certifications spanning IBM, Google, Microsoft, Oracle, Cisco, and more — including ISO/IEC 27001:2022 Lead Auditor and NEBOSH IGC — I bring both breadth and depth to every engagement.',
+                'Currently pursuing a Bachelor of Computer Science at Iqra University, I continuously bridge academic theory with practical real-world implementation across security operations, network design, and AI-driven tooling.',
+              ].map((p, i) => (
+                <motion.p
+                  key={i}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.15 }}
+                  className="text-base leading-relaxed"
+                  style={{ color: C.muted }}
+                >
+                  {p}
+                </motion.p>
+              ))}
+            </div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="rounded-xl p-8 text-center"
+              style={{ background: C.card, border: `1px solid ${C.border}` }}
             >
-              <div className="aspect-square bg-gradient-to-br from-[#029AFF] to-[#00FFFF] rounded-full flex items-center justify-center text-white text-8xl" style={{ fontFamily: 'Suranna, serif' }}>
+              <div
+                className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-5 text-2xl font-bold"
+                style={{ background: `${C.accent}22`, border: `2px solid ${C.accent}`, color: C.accent, fontFamily: 'Oswald, sans-serif' }}
+              >
                 AMM
               </div>
+              <div className="space-y-3 text-sm" style={{ color: C.muted }}>
+                {[
+                  { label: 'Location', value: 'Bahrain / Pakistan' },
+                  { label: 'Email', value: 'abdullah.mushtaq6876@gmail.com' },
+                  { label: 'LinkedIn', value: 'in/abdullah-mohammad-mushtaq' },
+                  { label: 'Certifications', value: '46+' },
+                  { label: 'Experience', value: '4+ Years' },
+                  { label: 'Languages', value: 'EN · AR · UR · PK · HI · PS' },
+                ].map(r => (
+                  <div key={r.label} className="flex justify-between gap-4">
+                    <span style={{ color: C.faint }}>{r.label}</span>
+                    <span className="text-right" style={{ color: C.text }}>{r.value}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      <Divider />
+
+      {/* ── Education ── */}
+      <section id="education" className="py-28 px-6 relative" style={{ background: C.bg2, zIndex: 1 }}>
+        <div className="max-w-4xl mx-auto">
+          <SectionHeading>Education</SectionHeading>
+          <div className="space-y-6">
+            {[
+              {
+                degree: 'Bachelor of Computer Science',
+                institution: 'Iqra University',
+                period: '2023 – 2027',
+                detail: 'Grade: B · Specialization in Cybersecurity, GRC, IT Infrastructure & Networking. Active in software development, data structures, algorithms, and AI projects.',
+              },
+              {
+                degree: 'Diploma of Associate Engineering in Computer Information Technology',
+                institution: 'Iqra College of Technology & Skills',
+                period: 'Completed',
+                detail: 'Core foundations in computer engineering and information technology.',
+              },
+              {
+                degree: 'Diploma in Human Resources Management and Services',
+                institution: 'Alison',
+                period: 'Apr 2024 – Present',
+                detail: 'Grade: Pass · Focus on employee relations, recruitment, performance management, and strategic HR planning.',
+              },
+            ].map((edu, i) => (
+              <Card key={i} delay={i * 0.1}>
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
+                  <h3 style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, fontSize: '1.1rem', color: C.text }}>
+                    {edu.degree}
+                  </h3>
+                  <span className="flex items-center gap-1 text-xs whitespace-nowrap" style={{ color: C.faint }}>
+                    <Calendar size={12} />{edu.period}
+                  </span>
+                </div>
+                <p className="text-sm mb-2 font-medium" style={{ color: C.accent }}>{edu.institution}</p>
+                <p className="text-sm leading-relaxed" style={{ color: C.muted }}>{edu.detail}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <Divider />
+
+      {/* ── Achievements ── */}
+      <section id="achievements" className="py-28 px-6 relative" style={{ background: C.bg1, zIndex: 1 }}>
+        <div className="max-w-6xl mx-auto">
+          <SectionHeading>Achievements</SectionHeading>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
+            {[
+              { number: '46+',  label: 'Professional Certifications' },
+              { number: '6',    label: 'Projects Delivered' },
+              { number: '4+',   label: 'Years of Experience' },
+              { number: '15+',  label: 'Industry Tools Mastered' },
+              { number: '6',    label: 'Languages Spoken' },
+              { number: '85%',  label: 'Paperwork Reduced via Automation' },
+            ].map((a, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, scale: 0.92 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+                whileHover={{ y: -4 }}
+                className="rounded-xl p-8 text-center"
+                style={{ background: C.card, border: `1px solid ${C.border}` }}
+              >
+                <div
+                  style={{
+                    fontFamily: 'Oswald, sans-serif',
+                    fontWeight: 700,
+                    fontSize: '2.8rem',
+                    color: C.accent,
+                    lineHeight: 1,
+                  }}
+                >
+                  {a.number}
+                </div>
+                <div className="mt-3 text-sm" style={{ color: C.muted }}>{a.label}</div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <Divider />
+
+      {/* ── Certifications ── */}
+      <section id="certifications" className="py-28 px-6 relative" style={{ background: C.bg2, zIndex: 1 }}>
+        <div className="max-w-7xl mx-auto">
+          <SectionHeading>Certifications</SectionHeading>
+          <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {Object.entries(certifications).map(([issuer, certs], i) => (
+              <motion.div
+                key={issuer}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.04 }}
+                onMouseEnter={() => setExpandedCert(issuer)}
+                onMouseLeave={() => setExpandedCert(null)}
+                className="rounded-xl cursor-pointer"
+                style={{
+                  background: C.card,
+                  border: `1px solid ${expandedCert === issuer ? C.accent : C.border}`,
+                  transition: 'border-color 0.2s',
+                }}
+              >
+                <div className="p-5">
+                  <div className="flex items-center justify-between mb-1">
+                    <span style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, color: C.text, fontSize: '0.95rem' }}>
+                      {issuer}
+                    </span>
+                    <span
+                      className="text-xs px-2 py-0.5 rounded-full"
+                      style={{ background: `${C.accent}33`, color: C.accentHi }}
+                    >
+                      {certs.length}
+                    </span>
+                  </div>
+
+                  <motion.div
+                    initial={false}
+                    animate={{ height: expandedCert === issuer ? 'auto' : 0, opacity: expandedCert === issuer ? 1 : 0 }}
+                    transition={{ duration: 0.25 }}
+                    style={{ overflow: 'hidden' }}
+                  >
+                    <ul className="mt-3 space-y-1.5">
+                      {certs.map((c, ci) => (
+                        <li key={ci} className="flex gap-2 text-xs leading-snug" style={{ color: C.muted }}>
+                          <span style={{ color: C.accent, marginTop: '3px', flexShrink: 0 }}>›</span>
+                          {c}
+                        </li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <Divider />
+
+      {/* ── Projects ── */}
+      <section id="projects" className="py-28 px-6 relative" style={{ background: C.bg1, zIndex: 1 }}>
+        <div className="max-w-7xl mx-auto">
+          <SectionHeading>Projects</SectionHeading>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {projects.map((p, i) => (
+              <Card key={i} delay={i * 0.08}>
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <h3 style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, fontSize: '1rem', color: C.text, lineHeight: 1.3 }}>
+                    {p.title}
+                  </h3>
+                  <span className="text-xs whitespace-nowrap pt-0.5" style={{ color: C.faint }}>{p.date}</span>
+                </div>
+                {p.association && (
+                  <div className="flex items-center gap-1 mb-3 text-xs" style={{ color: C.accent }}>
+                    <MapPin size={11} />{p.association}
+                  </div>
+                )}
+                <p className="text-sm leading-relaxed mb-5" style={{ color: C.muted }}>{p.description}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {p.stack.map((t, ti) => <Tag key={ti}>{t}</Tag>)}
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <Divider />
+
+      {/* ── Experience ── */}
+      <section id="experience" className="py-28 px-6 relative" style={{ background: C.bg2, zIndex: 1 }}>
+        <div className="max-w-4xl mx-auto">
+          <SectionHeading>Experience</SectionHeading>
+          <div className="relative pl-6 border-l" style={{ borderColor: C.border }}>
+            {experiences.map((exp, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.12 }}
+                className="mb-10 relative"
+              >
+                {/* Timeline node */}
+                <div
+                  className="absolute -left-[1.85rem] top-1.5 w-3 h-3 rounded-full"
+                  style={{ background: C.accent, border: `2px solid ${C.bg2}` }}
+                />
+                <div
+                  className="rounded-xl p-6"
+                  style={{ background: C.card, border: `1px solid ${C.border}` }}
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-1">
+                    <h3 style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, fontSize: '1.05rem', color: C.text }}>
+                      {exp.role}
+                    </h3>
+                    <span className="flex items-center gap-1 text-xs whitespace-nowrap" style={{ color: C.faint }}>
+                      <Calendar size={11} />{exp.period}
+                    </span>
+                  </div>
+                  <p className="text-sm font-medium mb-1" style={{ color: C.accent }}>{exp.company}</p>
+                  <div className="flex items-center gap-1 mb-3 text-xs" style={{ color: C.faint }}>
+                    <MapPin size={11} />{exp.location}
+                  </div>
+                  <p className="text-sm leading-relaxed" style={{ color: C.muted }}>{exp.description}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <Divider />
+
+      {/* ── Skills ── */}
+      <section id="skills" className="py-28 px-6 relative" style={{ background: C.bg1, zIndex: 1 }}>
+        <div className="max-w-6xl mx-auto">
+          <SectionHeading>Skills</SectionHeading>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Object.entries(skills).map(([cat, list], i) => (
+              <motion.div
+                key={cat}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+                className="rounded-xl p-6"
+                style={{ background: C.card, border: `1px solid ${C.border}` }}
+              >
+                <h3 className="mb-4 uppercase tracking-wider text-sm" style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, color: C.accent }}>
+                  {cat}
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {list.map((s, si) => <Tag key={si}>{s}</Tag>)}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Core Competencies */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+            className="mt-8 rounded-xl p-6"
+            style={{ background: C.card, border: `1px solid ${C.border}` }}
+          >
+            <h3 className="mb-4 uppercase tracking-wider text-sm" style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, color: C.accent }}>
+              Core Competencies
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {[
+                'IT Support & Troubleshooting', 'Network Administration', 'Cloud Computing',
+                'Cybersecurity & Threat Management', 'ISO 27001 Implementation', 'Digital Marketing',
+                'Social Media Management', 'Business Intelligence', 'IT Project Management',
+                'AI & Emerging Technologies', 'Cross-functional Team Collaboration', 'Stakeholder Management',
+              ].map((c, ci) => <Tag key={ci}>{c}</Tag>)}
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Gradient Divider */}
-      <div className="h-1" style={{
-        background: 'linear-gradient(90deg, #04044A 0%, #029AFF 25%, #00FFFF 50%, #029AFF 75%, #04044A 100%)'
-      }} />
+      <Divider />
 
-      {/* Education Section */}
-      <section id="education" className="min-h-screen py-32 px-6" style={{ background: '#04044A' }}>
-        <div className="max-w-5xl mx-auto">
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-6xl mb-20 text-[#00FFFF] tracking-wider text-center"
-            style={{ fontFamily: 'Suranna, serif' }}
-          >
-            Education
-          </motion.h2>
-
-          <div className="relative">
-            {/* Gradient Timeline Line */}
-            <div className="absolute left-1/2 top-0 bottom-0 w-1 transform -translate-x-1/2" style={{
-              background: 'linear-gradient(180deg, #029AFF 0%, #00FFFF 100%)'
-            }} />
-
-            {[
-              {
-                degree: 'Bachelor of Science in Computer Science',
-                institution: 'University Name',
-                period: '2022 - 2026',
-                focus: 'Specialization: Cybersecurity, GRC, IT Infrastructure & Networking'
-              },
-              {
-                degree: 'Higher Secondary Certificate',
-                institution: 'School Name',
-                period: '2020 - 2022',
-                focus: 'Focus: Computer Science & Mathematics'
-              }
-            ].map((edu, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.2 }}
-                className={`relative mb-16 ${index % 2 === 0 ? 'pr-1/2' : 'pl-1/2 ml-auto'} w-1/2`}
-              >
-                {/* Glowing Node */}
-                <div
-                  className="absolute top-1/2 w-6 h-6 rounded-full transform -translate-y-1/2"
-                  style={{
-                    [index % 2 === 0 ? 'right' : 'left']: '-13px',
-                    background: '#00FFFF',
-                    boxShadow: '0 0 20px #00FFFF'
-                  }}
-                />
-
-                <div
-                  className="p-8 rounded-xl backdrop-blur-xl"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(0, 6, 117, 0.4) 0%, rgba(4, 4, 74, 0.4) 100%)',
-                    border: '1px solid #029AFF',
-                    boxShadow: '0 0 30px rgba(2, 154, 255, 0.2)'
-                  }}
-                >
-                  <h3 className="text-2xl text-white mb-2" style={{ fontFamily: 'Suranna, serif' }}>
-                    {edu.degree}
-                  </h3>
-                  <p className="text-[#029AFF] text-lg mb-2">{edu.institution}</p>
-                  <p className="text-[#00FFFF] text-sm mb-3">{edu.period}</p>
-                  <p className="text-white/70">{edu.focus}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Gradient Divider */}
-      <div className="h-1" style={{
-        background: 'linear-gradient(90deg, #04044A 0%, #029AFF 25%, #00FFFF 50%, #029AFF 75%, #04044A 100%)'
-      }} />
-
-      {/* Achievements Section */}
-      <section id="achievements" className="min-h-screen py-32 px-6" style={{ background: '#000675' }}>
-        <div className="max-w-7xl mx-auto">
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-6xl mb-20 text-[#00FFFF] tracking-wider text-center"
-            style={{ fontFamily: 'Suranna, serif' }}
-          >
-            Achievements
-          </motion.h2>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { number: '35+', label: 'Professional Certifications' },
-              { number: '10+', label: 'Security Projects' },
-              { number: '15+', label: 'Industry Tools Mastered' },
-              { number: '3+', label: 'Years of Experience' },
-              { number: '100%', label: 'Commitment to Excellence' },
-              { number: '24/7', label: 'Security Mindset' }
-            ].map((achievement, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ scale: 1.05 }}
-                className="p-10 rounded-xl backdrop-blur-xl text-center"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(0, 6, 117, 0.5) 0%, rgba(4, 4, 74, 0.5) 100%)',
-                  border: '2px solid #029AFF',
-                  boxShadow: '0 0 30px rgba(2, 154, 255, 0.3)'
-                }}
-              >
-                <div
-                  className="text-7xl mb-4 text-[#00FFFF]"
-                  style={{
-                    fontFamily: 'Suranna, serif',
-                    textShadow: '0 0 30px #00FFFF'
-                  }}
-                >
-                  {achievement.number}
-                </div>
-                <div className="text-white/90 text-lg tracking-wide">
-                  {achievement.label}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Gradient Divider */}
-      <div className="h-1" style={{
-        background: 'linear-gradient(90deg, #04044A 0%, #029AFF 25%, #00FFFF 50%, #029AFF 75%, #04044A 100%)'
-      }} />
-
-      {/* Certifications Section */}
-      <section id="certifications" className="min-h-screen py-32 px-6" style={{ background: '#04044A' }}>
-        <div className="max-w-7xl mx-auto">
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-6xl mb-20 text-[#00FFFF] tracking-wider text-center"
-            style={{ fontFamily: 'Suranna, serif' }}
-          >
-            Certifications
-          </motion.h2>
-
-          <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {Object.entries(certifications).map(([issuer, certs], index) => (
-              <motion.div
-                key={issuer}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-                onMouseEnter={() => setExpandedCert(issuer)}
-                onMouseLeave={() => setExpandedCert(null)}
-                className="relative"
-              >
-                <motion.div
-                  className="p-6 rounded-xl backdrop-blur-xl cursor-pointer h-full"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(0, 6, 117, 0.5) 0%, rgba(4, 4, 74, 0.5) 100%)',
-                    border: '2px solid #029AFF',
-                    boxShadow: expandedCert === issuer ? '0 0 40px rgba(0, 255, 255, 0.6)' : '0 0 20px rgba(2, 154, 255, 0.3)'
-                  }}
-                  whileHover={{
-                    scale: 1.02,
-                    borderColor: '#00FFFF'
-                  }}
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-2xl text-white" style={{ fontFamily: 'Suranna, serif' }}>
-                      {issuer}
-                    </h3>
-                    <div
-                      className="px-3 py-1 rounded-full text-sm text-white"
-                      style={{
-                        background: 'linear-gradient(135deg, #029AFF 0%, #00FFFF 100%)'
-                      }}
-                    >
-                      {certs.length}
-                    </div>
-                  </div>
-
-                  {/* Expanded List */}
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{
-                      height: expandedCert === issuer ? 'auto' : 0,
-                      opacity: expandedCert === issuer ? 1 : 0
-                    }}
-                    transition={{ duration: 0.3 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="mt-4 space-y-2">
-                      {certs.map((cert, certIndex) => (
-                        <motion.div
-                          key={certIndex}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{
-                            opacity: expandedCert === issuer ? 1 : 0,
-                            x: expandedCert === issuer ? 0 : -10
-                          }}
-                          transition={{ delay: certIndex * 0.05 }}
-                          className="flex items-start gap-2 text-white/80 text-sm"
-                        >
-                          <div
-                            className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0"
-                            style={{
-                              background: '#00FFFF',
-                              boxShadow: '0 0 10px #00FFFF'
-                            }}
-                          />
-                          <span>{cert}</span>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </motion.div>
-                </motion.div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Gradient Divider */}
-      <div className="h-1" style={{
-        background: 'linear-gradient(90deg, #04044A 0%, #029AFF 25%, #00FFFF 50%, #029AFF 75%, #04044A 100%)'
-      }} />
-
-      {/* Projects Section */}
-      <section id="projects" className="min-h-screen py-32 px-6" style={{ background: '#000675' }}>
-        <div className="max-w-7xl mx-auto">
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-6xl mb-20 text-[#00FFFF] tracking-wider text-center"
-            style={{ fontFamily: 'Suranna, serif' }}
-          >
-            Projects
-          </motion.h2>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {projects.map((project, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{
-                  y: -10,
-                  boxShadow: '0 20px 60px rgba(0, 255, 255, 0.4)'
-                }}
-                className="p-8 rounded-xl backdrop-blur-xl"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(0, 6, 117, 0.5) 0%, rgba(4, 4, 74, 0.5) 100%)',
-                  border: '2px solid #029AFF'
-                }}
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-xl text-white leading-snug flex-1 pr-4" style={{ fontFamily: 'Suranna, serif' }}>
-                    {project.title}
-                  </h3>
-                  <span className="text-[#00FFFF] text-xs whitespace-nowrap mt-1">{project.date}</span>
-                </div>
-                {project.association && (
-                  <p className="text-[#029AFF] text-sm mb-3">📍 {project.association}</p>
-                )}
-                <p className="text-white/70 mb-6 leading-relaxed text-sm">
-                  {project.description}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {project.stack.map((tech, techIndex) => (
-                    <span
-                      key={techIndex}
-                      className="px-3 py-1 rounded-full text-xs text-[#00FFFF] border border-[#00FFFF]"
-                      style={{
-                        boxShadow: '0 0 10px rgba(0, 255, 255, 0.3)'
-                      }}
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Gradient Divider */}
-      <div className="h-1" style={{
-        background: 'linear-gradient(90deg, #04044A 0%, #029AFF 25%, #00FFFF 50%, #029AFF 75%, #04044A 100%)'
-      }} />
-
-      {/* Experience Section */}
-      <section id="experience" className="min-h-screen py-32 px-6" style={{ background: '#04044A' }}>
-        <div className="max-w-5xl mx-auto">
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-6xl mb-20 text-[#00FFFF] tracking-wider text-center"
-            style={{ fontFamily: 'Suranna, serif' }}
-          >
-            Experience
-          </motion.h2>
-
-          <div className="relative">
-            {/* Gradient Timeline Line */}
-            <div className="absolute left-1/2 top-0 bottom-0 w-1 transform -translate-x-1/2" style={{
-              background: 'linear-gradient(180deg, #029AFF 0%, #00FFFF 100%)'
-            }} />
-
-            {experiences.map((exp, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.2 }}
-                className={`relative mb-16 ${index % 2 === 0 ? 'pr-1/2' : 'pl-1/2 ml-auto'} w-1/2`}
-              >
-                {/* Glowing Node */}
-                <div
-                  className="absolute top-1/2 w-6 h-6 rounded-full transform -translate-y-1/2"
-                  style={{
-                    [index % 2 === 0 ? 'right' : 'left']: '-13px',
-                    background: '#00FFFF',
-                    boxShadow: '0 0 20px #00FFFF'
-                  }}
-                />
-
-                <div
-                  className="p-8 rounded-xl backdrop-blur-xl"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(0, 6, 117, 0.4) 0%, rgba(4, 4, 74, 0.4) 100%)',
-                    border: '1px solid #029AFF',
-                    boxShadow: '0 0 30px rgba(2, 154, 255, 0.2)'
-                  }}
-                >
-                  <h3 className="text-2xl text-white mb-2" style={{ fontFamily: 'Suranna, serif' }}>
-                    {exp.role}
-                  </h3>
-                  <p className="text-[#029AFF] text-lg mb-1">{exp.company}</p>
-                  <p className="text-[#00FFFF] text-sm mb-1">{exp.period}</p>
-                  <p className="text-white/40 text-xs mb-3">{exp.location}</p>
-                  <p className="text-white/70 text-sm leading-relaxed">{exp.description}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Gradient Divider */}
-      <div className="h-1" style={{
-        background: 'linear-gradient(90deg, #04044A 0%, #029AFF 25%, #00FFFF 50%, #029AFF 75%, #04044A 100%)'
-      }} />
-
-      {/* Skills Section */}
-      <section id="skills" className="min-h-screen py-32 px-6" style={{ background: '#000675' }}>
-        <div className="max-w-7xl mx-auto">
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-6xl mb-20 text-[#00FFFF] tracking-wider text-center"
-            style={{ fontFamily: 'Suranna, serif' }}
-          >
-            Skills
-          </motion.h2>
-
-          <div className="space-y-12">
-            {Object.entries(skills).map(([category, skillList], index) => (
-              <motion.div
-                key={category}
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <h3 className="text-3xl text-[#029AFF] mb-6" style={{ fontFamily: 'Suranna, serif' }}>
-                  {category}
-                </h3>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {skillList.map((skill, skillIndex) => (
-                    <motion.div
-                      key={skillIndex}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.1 + skillIndex * 0.05 }}
-                      whileHover={{
-                        scale: 1.05,
-                        boxShadow: '0 0 30px rgba(0, 255, 255, 0.5)'
-                      }}
-                      className="p-4 rounded-lg backdrop-blur-xl"
-                      style={{
-                        background: 'linear-gradient(135deg, rgba(0, 6, 117, 0.3) 0%, rgba(4, 4, 74, 0.3) 100%)',
-                        border: '1px solid #029AFF'
-                      }}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{
-                            background: 'linear-gradient(135deg, #029AFF 0%, #00FFFF 100%)',
-                            boxShadow: '0 0 15px #00FFFF'
-                          }}
-                        />
-                        <span className="text-white">{skill}</span>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Gradient Divider */}
-      <div className="h-1" style={{
-        background: 'linear-gradient(90deg, #04044A 0%, #029AFF 25%, #00FFFF 50%, #029AFF 75%, #04044A 100%)'
-      }} />
-
-      {/* Contact Section */}
-      <section id="contact" className="min-h-screen flex items-center py-32 px-6 relative" style={{ background: '#000000' }}>
-        {/* Radiant Glow Background */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div
-            className="w-[800px] h-[800px] rounded-full opacity-20"
-            style={{
-              background: 'radial-gradient(circle, #00FFFF 0%, transparent 70%)',
-              filter: 'blur(100px)'
-            }}
-          />
-        </div>
-
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-6xl mb-8 text-[#00FFFF] tracking-wider"
-            style={{
-              fontFamily: 'Suranna, serif',
-              textShadow: '0 0 40px #00FFFF'
-            }}
-          >
-            Let's Connect
-          </motion.h2>
-
+      {/* ── Contact ── */}
+      <section id="contact" className="py-28 px-6 relative" style={{ background: C.bg2, zIndex: 1 }}>
+        <div className="max-w-2xl mx-auto text-center">
+          <SectionHeading>Let's Connect</SectionHeading>
           <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="text-white/80 text-xl mb-12 leading-relaxed"
+            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+            className="mb-10 leading-relaxed"
+            style={{ color: C.muted }}
           >
-            I'm always open to discussing cybersecurity opportunities, collaboration on security projects,
-            or sharing knowledge about the latest threats and defensive strategies.
+            Open to cybersecurity opportunities, GRC consulting, network architecture projects, or knowledge exchange. Reach out through any channel below.
           </motion.p>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4 }}
-            className="flex justify-center gap-8 mb-12"
+            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            className="flex justify-center gap-5 mb-10"
           >
             {[
-              { icon: Mail, label: 'Email', link: 'mailto:abdullah@example.com' },
-              { icon: Linkedin, label: 'LinkedIn', link: 'https://linkedin.com/in/abdullah-mushtaq' },
-              { icon: Github, label: 'GitHub', link: 'https://github.com/abdullah-mushtaq' }
-            ].map((social, index) => (
+              { icon: Mail,     label: 'Email',    href: 'mailto:abdullah.mushtaq6876@gmail.com' },
+              { icon: Linkedin, label: 'LinkedIn', href: 'https://linkedin.com/in/abdullah-mohammad-mushtaq' },
+              { icon: Github,   label: 'GitHub',   href: 'https://github.com' },
+            ].map((s, i) => (
               <motion.a
-                key={index}
-                href={social.link}
+                key={i}
+                href={s.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                whileHover={{
-                  scale: 1.1,
-                  boxShadow: '0 0 40px rgba(0, 255, 255, 0.8)'
-                }}
-                whileTap={{ scale: 0.9 }}
-                className="p-6 rounded-full backdrop-blur-xl"
+                whileHover={{ y: -4 }}
+                className="flex flex-col items-center gap-2 p-5 rounded-xl text-xs"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(2, 154, 255, 0.2) 0%, rgba(0, 255, 255, 0.2) 100%)',
-                  border: '2px solid #029AFF',
-                  boxShadow: '0 0 20px rgba(0, 255, 255, 0.3)'
+                  background: C.card,
+                  border: `1px solid ${C.border}`,
+                  color: C.muted,
+                  transition: 'border-color 0.2s',
+                  minWidth: '90px',
                 }}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = C.accent)}
+                onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}
               >
-                <social.icon className="w-8 h-8 text-[#00FFFF]" />
+                <s.icon size={22} style={{ color: C.accent }} />
+                {s.label}
               </motion.a>
             ))}
           </motion.div>
 
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
+          <motion.a
+            initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.6 }}
-            onClick={() => window.location.href = 'mailto:abdullah@example.com'}
-            className="px-16 py-5 rounded-full text-white text-lg font-semibold tracking-wider"
+            href="mailto:abdullah.mushtaq6876@gmail.com"
+            className="inline-block px-10 py-3 rounded font-semibold tracking-widest text-sm uppercase"
             style={{
-              background: 'linear-gradient(135deg, #029AFF 0%, #00FFFF 100%)',
-              boxShadow: '0 0 40px rgba(0, 255, 255, 0.6)'
+              fontFamily: 'Oswald, sans-serif',
+              background: C.accent,
+              color: '#fff',
             }}
-            whileHover={{
-              scale: 1.05,
-              boxShadow: '0 0 60px rgba(0, 255, 255, 0.9)'
-            }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ backgroundColor: C.accentHi } as any}
           >
-            SEND MESSAGE
-          </motion.button>
+            Send Message
+          </motion.a>
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.8 }}
-            className="mt-16 text-white/50 text-sm"
-          >
-            © 2026 Abdullah Mohammad Mushtaq. All rights reserved.
-          </motion.p>
+          <p className="mt-14 text-xs" style={{ color: C.faint }}>
+            © 2026 Abdullah Mohammad Mushtaq · All rights reserved.
+          </p>
         </div>
       </section>
     </div>

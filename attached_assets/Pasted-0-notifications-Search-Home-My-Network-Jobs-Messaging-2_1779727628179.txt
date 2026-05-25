@@ -1,0 +1,304 @@
+0 notifications
+Search
+
+
+Home
+My Network
+Jobs
+Messaging
+21
+Notifications
+
+
+Me
+
+For Business
+Try Premium for Rs 0
+
+
+Abdullah Mohammad Mushtaq
+
+IT Infrastructure & Cybersecurity Engineer | ISO/IEC 27001:2022 Lead Auditor | GRC | CSCSO | CRPO | Cloud & Network Architect | Certified Project Manager | NEBOSH IGC
+
+
+More
+Message
+Projects
+
+LeafAI – Plant Disease Detection & Treatment Recommender
+
+Feb 2026 – Feb 2026
+
+
+Associated with Iqra University (Official)
+
+LeafAI is a deep learning-powered system designed to identify diseases in plant leaves and suggest potential treatments. The project leverages convolutional neural networks (CNNs), specifically a MobileNetV2 backbone, for efficient and accurate image classification.
+
+Key highlights:
+	•	Trained on 16,000+ images of healthy and diseased plant leaves using the PlantVillage dataset.
+	•	Utilizes transfer learning with MobileNetV2 for faster convergence and high accuracy on limited data.
+	•	Outputs disease predictions with confidence scores, helping in early detection and timely intervention.
+	•	Designed as a Streamlit web app, offering a user-friendly interface for uploading leaf images and receiving instant results.
+	•	Focused on practical applications in agriculture, enabling farmers, researchers, and agritech professionals to make data-driven decisions.
+	•	Optimized for speed and accuracy, ensuring real-time predictions even on standard hardware.
+
+Technologies & Tools:
+	•	Python, TensorFlow/Keras
+	•	MobileNetV2 (Transfer Learning)
+	•	OpenCV & PIL for image preprocessing
+	•	Streamlit for web app interface
+	•	Pandas & NumPy for data manipulation
+
+Impact:
+LeafAI demonstrates the power of AI in agriculture, bridging machine learning and real-world problem solving. By detecting plant diseases early, it contributes to crop protection, yield improvement, and sustainable farming practices.
+
+Skills: Artificial Intelligence (AI), Machine Learning, +1 skill
+
+Thumbnail for 🌿 LeafAI – Plant Disease Detection & Treatment Recommender.pptx
+🌿 LeafAI – Plant Disease Detection & Treatment Recommender.pptx
+
+Thumbnail for GitHub link to my project
+GitHub link to my project
+
+ClimaCast – Weather Forecasting PWA & Android App
+
+Jan 2026 – Jan 2026
+
+
+Associated with Iqra University (Official)
+
+I developed ClimaCast as my semester project during my Bachelor’s in Computer Science and is a modern, responsive weather forecasting application built as a Progressive Web App (PWA) and deployed as an Android application using a single shared codebase.
+
+The application delivers real-time weather updates, hourly and daily forecasts, location-based weather detection, favorite city management, unit conversion, and offline functionality through efficient caching strategies and service workers.
+
+The project was implemented using React, TypeScript, and Tailwind CSS, integrated with external weather APIs for live data, and packaged into a native Android APK using Capacitor. Development emphasized performance optimization, accessibility, responsive UI design, and hybrid architecture efficiency.
+
+This project demonstrates practical experience in modern web technologies, API integration, PWA development, mobile deployment, and user-centered application design, with a strong focus on real-world usability and scalability.
+
+Skills: Skills
+
+Thumbnail for .
+.
+
+Thumbnail for .
+.
+
+Thumbnail for .
+.
+
+Show all 6 media
+Smart Encryption Web App - Secure your text and files
+
+Sep 2025 – Sep 2025
+
+
+Associated with Iqra University (Official)
+
+Smart Encryption Web App – Secure Your Text and Files
+
+I am excited to share my latest project: a web application for encryption and decryption that is simple, efficient, and practical. This app allows users to:
+	•	Encryption and Decryption: AES (Fernet) for strong, modern security.
+	•	Encoding and Decoding: Caesar Cipher.
+	•	File Processing: Upload and process text files via drag and drop.
+	Project Goal: Demonstrate cryptography application in a user-friendly web environment. a user-friendly web environment. It is built using Python (Flask), HTML, CSS, and JavaScript, combining both backend logic and frontend interactivity.
+
+The app is designed to provide a hands-on experience with encryption, whether for personal use, academic projects, or professional demonstrations.
+
+Skills: Information Technology, Cybersecurity
+
+Thumbnail for Smart Encryption • Encrypt & Decrypt
+Smart Encryption • Encrypt & Decrypt
+
+Simulated Phishing & Keylogging Attack Demonstration (Cybersecurity Awareness & Risk Mitigation)
+
+Aug 2025 – Aug 2025
+
+Developed and executed a short awareness project demonstrating a Simulated Phishing Attack and Keylogging to highlight a critical vulnerability in digital systems: human error. This project was designed to promote robust Cybersecurity Awareness and educate users on preventative measures.
+
+Key Contributions & Skills Demonstrated:
+
+Security Training & Awareness: Created visually engaging content to train non-technical users on identifying and avoiding fake login portals (as shown in the attached visual demo using the fictitious "urGovernment App").
+
+Risk Management & Mitigation: Clearly communicated the Golden Rule of security: Never enter credentials on suspicious sites, and advocated for essential controls like Multi-Factor Authentication (MFA) and stringent URL Verification.
+
+Threat Emulation: Built a demonstration environment to simulate the Attacker View, capturing keystrokes (username: admin | password: admin) to show the real-time danger of credential harvesting.
+
+Goal: To foster a security-first culture ("Cybersecurity is everyone's job") and significantly reduce the threat surface area by addressing the single largest point of failure the user.
+
+Skills: Cybersecurity
+
+Thumbnail for Simulated Phishing & Keylogging Attack Demonstration (Cybersecurity Awareness & Risk Mitigation)
+Simulated Phishing & Keylogging Attack Demonstration (Cybersecurity Awareness & Risk Mitigation)
+
+Thumbnail for Simulated Phishing & Keylogging Attack Demonstration (Cybersecurity Awareness & Risk Mitigation)
+Simulated Phishing & Keylogging Attack Demonstration (Cybersecurity Awareness & Risk Mitigation)
+
+Enterprise-Level Multi-Protocol Network Design and Implementation
+
+Apr 2025 – Apr 2025
+
+
+Associated with Iqra University (Official)
+
+In this project, I designed and implemented a large-scale enterprise network topology using Cisco Packet Tracer. The network integrates multiple protocols and technologies to ensure scalability, security, and efficient data flow across various departments.
+
+Key Features of the Project:
+	•	🌐 Hierarchical Network Design: Multiple interconnected LANs and WAN segments representing enterprise-level departments.
+	•	⚙️ Routing Protocols:
+	•	RIP for small-scale routing.
+	•	OSPF (Multi-Area) for scalability and fast convergence.
+	•	EIGRP for efficient routing in selected network segments.
+	•	🖥️ End Devices: PCs, Laptops, Tablets, and Smartphones integrated into the network.
+	•	📡 Wireless Access: Configured Access Points to connect mobile and smart devices.
+	•	🛠️ Server Configuration: Mail Server, DHCP Server, and other critical services deployed for enterprise functionality.
+	•	🔄 Redundancy & Reliability: Multiple paths configured to ensure fault tolerance and load balancing.
+	•	🔐 Subnetting & IP Allocation: Proper subnetting used to optimize IP addressing and enhance network management.
+
+This project demonstrates practical implementation of core networking concepts including IP addressing, VLANs, server configuration, and multi-protocol routing in a simulated enterprise environment.
+
+Thumbnail for Enterprise-Level Multi-Protocol Network Design and Implementation 
+Enterprise-Level Multi-Protocol Network Design and Implementation 
+
+In this project, I designed and implemented a large-scale enterprise network topology using Cisco Packet Tracer. The network integrates multiple protocols and technologies to ensure scalability, security, and efficient data flow across various departments.
+
+Key Features of the Project:
+	•	🌐 Hierarchical Network Design: Multiple interconnected LANs and WAN segments representing enterprise-level departments.
+	•	⚙️ Routing Protocols:
+	•	RIP for small-scale routing.
+	•	OSPF (Multi-Area) for scalability and fast convergence.
+	•	EIGRP for efficient routing in selected network segments.
+	•	🖥️ End Devices: PCs, Laptops, Tablets, and Smartphones integrated into the network.
+	•	📡 Wireless Access: Configured Access Points to connect mobile and smart devices.
+	•	🛠️ Server Configuration: Mail Server, DHCP Server, and other critical services deployed for enterprise functionality.
+	•	🔄 Redundancy & Reliability: Multiple paths configured to ensure fault tolerance and load balancing.
+	•	🔐 Subnetting & IP Allocation: Proper subnetting used to optimize IP addressing and enhance network management.
+
+This project demonstrates practical implementation of core networking concepts including IP addressing, VLANs, server configuration, and multi-protocol routing in a simulated enterprise environment.
+
+Thumbnail for Project Demonstration video
+Project Demonstration video
+
+Auto Paper Formation Software
+
+Feb 2025 – Feb 2025
+
+💡 About the Software:  
+The software revolutionizes the question paper creation process by introducing automation and customization, tailored for educational institutions and faculty needs. Its key features include:  
+🔹 Dynamic question bank management  
+🔹 Automatic paper generation with question randomization  
+🔹 Multi-format export options (PDF, DOCX, etc.)  
+🔹 User roles and access control  
+🔹 Seamless integration with LMS and SIS systems  
+
+🎯Benefits:
+The software not only reduces administrative overhead but also ensures security, efficiency, and scalability. With a user-friendly interface and robust performance, it’s designed to meet the dynamic needs of modern education.
+
+✨Key Achievements:
+✅ Reduced paperwork by 85%  
+✅ Improved efficiency by 95%  
+✅ Enhanced the integrity of assessments  
+
+Thumbnail for Auto Paper Formation Software
+Auto Paper Formation Software
+
+Automating question paper creation with features like dynamic question banks, randomized generation, multi-format exports, and LMS integration. It improves efficiency, reduces overhead, and enhances assessment integrity, with future plans for AI integration and automated grading.
+
+Other contributors
+
+View all contributors
+
+More profiles for you
+Muhammad Zain Ul Noorani is open to work
+Muhammad Zain Ul Noorani 
+
+· 1st
+
+MS-IS ||Cybersecurity Defense Analyst||eCTHPv2 Certified || CISSP Aspirant ||CISM Certified||Malware Analysis||EDR|| AV || Resileant || RegEX || SIEM Monitoring || DFIR || Threat Hunter & Incident Responder ||Qualys VMDR
+
+Message
+
+Hamid Nourah 
+
+· 1st
+
+Regional Logistics Manager @ MenaBev | Operations, Project, Team Management, CISCC
+
+Message
+
+Abdulmohsen Almulhim
+
+· 2nd
+
+Cybersecurity Senior analyst  | SOC L2 | DFIR | eCIRv2 | eCTHPv2 | Security+ | EJPTv2 | AWS Cloud CCP
+
+
+Connect
+
+Abdulellah Alotaibi, ITIL® 
+
+· 2nd
+
+Junior IT Governance & Compliance | Policies & Procedures | ITSM Practices | SDAIA, NDMO, DGA and NCA Standards
+
+
+Follow
+Anas Malik is open to work
+Anas Malik
+
+· 1st
+
+Assistant Branch Manager at Universal Computers Inc | Computer Science Alumni | IT Specialist | Aspiring Data Analyst
+
+Message
+
+Show more
+
+About
+
+Accessibility
+
+Talent Solutions
+
+Community Guidelines
+
+Careers
+
+Marketing Solutions 
+
+Privacy & Terms
+
+Ad Choices
+
+Advertising
+
+Sales Solutions
+
+Mobile
+
+Small Business
+
+Safety Center
+
+LinkedIn Corporation © 2026
+
+Questions?
+
+Visit our Help Center.
+
+Manage your account and privacy
+
+Go to your Settings.
+
+Recommendation transparency
+
+Learn more about Recommended Content.
+
+Select language
+
+
+English (English)
+Omaima Abdul Hakeem
+MessagingYou are on the messaging overlay. Press enter to open the list of conversations.
+
+Compose message
+You are on the messaging overlay. Press enter to open the list of conversations.
