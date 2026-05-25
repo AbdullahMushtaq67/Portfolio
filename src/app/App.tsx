@@ -71,55 +71,82 @@ export default function App() {
 
   const projects = [
     {
-      title: 'Security Operations Center (SOC) Simulation',
-      stack: ['SIEM', 'Splunk', 'Python', 'Wireshark'],
-      description: 'Built enterprise-grade SOC environment for threat detection and incident response'
+      title: 'LeafAI – Plant Disease Detection & Treatment Recommender',
+      date: 'Feb 2026',
+      association: 'Iqra University',
+      stack: ['Python', 'TensorFlow/Keras', 'MobileNetV2', 'OpenCV', 'Streamlit', 'NumPy'],
+      description: 'Deep learning-powered system to identify diseases in plant leaves and suggest treatments. Trained on 16,000+ images using the PlantVillage dataset with MobileNetV2 transfer learning. Outputs disease predictions with confidence scores via a Streamlit web app, enabling early detection for farmers and agritech professionals.'
     },
     {
-      title: 'GRC Framework Implementation',
-      stack: ['NIST', 'ISO 27001', 'Risk Management', 'Compliance'],
-      description: 'Developed comprehensive governance framework for IT infrastructure compliance'
+      title: 'ClimaCast – Weather Forecasting PWA & Android App',
+      date: 'Jan 2026',
+      association: 'Iqra University',
+      stack: ['React', 'TypeScript', 'Tailwind CSS', 'Capacitor', 'PWA', 'Weather API'],
+      description: 'Modern responsive weather forecasting app built as a Progressive Web App and deployed as an Android APK using a single shared codebase. Delivers real-time updates, hourly/daily forecasts, location detection, offline functionality via service workers, and favorite city management.'
     },
     {
-      title: 'Network Infrastructure Design',
-      stack: ['Cisco', 'VLANs', 'Routing', 'Firewalls'],
-      description: 'Designed multi-layer enterprise network with advanced security protocols'
+      title: 'Smart Encryption Web App',
+      date: 'Sep 2025',
+      association: 'Iqra University',
+      stack: ['Python', 'Flask', 'HTML', 'CSS', 'JavaScript', 'AES/Fernet'],
+      description: 'Web application for encryption and decryption featuring AES (Fernet) for strong security, Caesar Cipher encoding/decoding, and drag-and-drop file processing. Built to demonstrate cryptography in a user-friendly web environment for personal, academic, and professional use.'
     },
     {
-      title: 'Vulnerability Assessment Platform',
-      stack: ['Nmap', 'Metasploit', 'Burp Suite', 'OWASP'],
-      description: 'Automated vulnerability scanning and reporting system for web applications'
+      title: 'Simulated Phishing & Keylogging Attack Demo',
+      date: 'Aug 2025',
+      stack: ['Cybersecurity', 'Threat Emulation', 'Security Awareness', 'Risk Mitigation'],
+      description: 'Awareness project demonstrating a simulated phishing attack and keylogging to highlight human-error vulnerabilities. Created visually engaging training content on identifying fake login portals, advocating for MFA and URL verification, fostering a security-first culture.'
     },
     {
-      title: 'Cloud Security Architecture',
-      stack: ['Azure', 'AWS', 'IAM', 'Zero Trust'],
-      description: 'Implemented zero-trust security model for hybrid cloud infrastructure'
+      title: 'Enterprise-Level Multi-Protocol Network Design',
+      date: 'Apr 2025',
+      association: 'Iqra University',
+      stack: ['Cisco Packet Tracer', 'OSPF', 'EIGRP', 'RIP', 'VLANs', 'DHCP'],
+      description: 'Designed and implemented a large-scale enterprise network topology integrating RIP, OSPF (Multi-Area), and EIGRP protocols. Features hierarchical network design, wireless access points, Mail/DHCP server configuration, redundancy for fault tolerance, and proper subnetting across multiple departments.'
     },
     {
-      title: 'Incident Response Automation',
-      stack: ['SOAR', 'Python', 'Threat Intelligence', 'Playbooks'],
-      description: 'Automated incident response workflows reducing MTTR by 60%'
+      title: 'Auto Paper Formation Software',
+      date: 'Feb 2025',
+      stack: ['Automation', 'PDF/DOCX Export', 'LMS Integration', 'Access Control'],
+      description: 'Software that revolutionizes question paper creation through automation. Features dynamic question bank management, randomized paper generation, multi-format export (PDF, DOCX), user roles & access control, and LMS/SIS integration. Reduced paperwork by 85% and improved efficiency by 95%.'
     }
   ];
 
   const experiences = [
     {
-      role: 'Cybersecurity Analyst Intern',
-      company: 'SecureNet Solutions',
-      period: '2025 - Present',
-      description: 'Conducted security assessments and implemented defense strategies'
+      role: 'IT & Marketing Manager',
+      company: 'Al Mahira Workshop W.L.L',
+      period: 'Jan 2025 – Present',
+      location: 'Tubli, Bahrain · Hybrid',
+      description: 'Overseeing IT systems to ensure seamless operations and implementing technology solutions for business needs. Leading digital marketing strategies including social media management and brand development. Coordinating between technical and marketing teams to align objectives with technology-driven growth.'
     },
     {
-      role: 'Network Security Associate',
-      company: 'TechGuard Infrastructure',
-      period: '2024 - 2025',
-      description: 'Managed firewall configurations and network security monitoring'
+      role: 'IT Support & Administrative Assistant',
+      company: 'Uni Technical Services',
+      period: 'Jan 2024 – Dec 2024',
+      location: 'Dubai, UAE · Remote',
+      description: 'Delivered comprehensive IT support by troubleshooting technical issues and assisting users with hardware and software problems. Managed administrative tasks including scheduling, record-keeping, and communications. Coordinated office operations to support team workflows and ensure smooth day-to-day functionality.'
     },
     {
-      role: 'IT Infrastructure Volunteer',
-      company: 'University Technology Center',
-      period: '2023 - 2024',
-      description: 'Maintained campus network infrastructure and supported cybersecurity initiatives'
+      role: 'Ambassador',
+      company: 'Volunteer Force Pakistan (clcglobally)',
+      period: 'Jul 2024 – Oct 2024',
+      location: 'Islamabad, Pakistan · Internship',
+      description: 'Assisted in event planning and coordination for national-level initiatives. Supported project operations through communication and logistics tasks. Ensured smooth execution of conferences with attention to detail. Received Certificate of Appreciation for contributions at the Creative Leadership Conference.'
+    },
+    {
+      role: 'Information Technology Consultant',
+      company: 'Naqvi Associates',
+      period: 'Jul 2022 – Dec 2023',
+      location: 'Islamabad, Pakistan · On-site',
+      description: 'Provided expert technical consulting and support to enhance IT systems and workflows for clients. Assisted in implementing digital solutions including system upgrades and troubleshooting processes. Collaborated on digital marketing initiatives to support online platforms and drive business growth.'
+    },
+    {
+      role: 'Information Technology Assistant',
+      company: 'Naqvi Associates',
+      period: 'Nov 2021 – Apr 2022',
+      location: 'Islamabad, Pakistan · Internship',
+      description: 'Assisted in daily IT operations ensuring smooth system monitoring and basic troubleshooting. Provided technical guidance and support for end-users with hardware and software setups. Maintained IT documentation and coordinated small technical tasks within the team.'
     }
   ];
 
@@ -599,17 +626,23 @@ export default function App() {
                   border: '2px solid #029AFF'
                 }}
               >
-                <h3 className="text-2xl text-white mb-4" style={{ fontFamily: 'Suranna, serif' }}>
-                  {project.title}
-                </h3>
-                <p className="text-white/70 mb-6 leading-relaxed">
+                <div className="flex items-start justify-between mb-3">
+                  <h3 className="text-xl text-white leading-snug flex-1 pr-4" style={{ fontFamily: 'Suranna, serif' }}>
+                    {project.title}
+                  </h3>
+                  <span className="text-[#00FFFF] text-xs whitespace-nowrap mt-1">{project.date}</span>
+                </div>
+                {project.association && (
+                  <p className="text-[#029AFF] text-sm mb-3">📍 {project.association}</p>
+                )}
+                <p className="text-white/70 mb-6 leading-relaxed text-sm">
                   {project.description}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {project.stack.map((tech, techIndex) => (
                     <span
                       key={techIndex}
-                      className="px-3 py-1 rounded-full text-sm text-[#00FFFF] border border-[#00FFFF]"
+                      className="px-3 py-1 rounded-full text-xs text-[#00FFFF] border border-[#00FFFF]"
                       style={{
                         boxShadow: '0 0 10px rgba(0, 255, 255, 0.3)'
                       }}
@@ -678,9 +711,10 @@ export default function App() {
                   <h3 className="text-2xl text-white mb-2" style={{ fontFamily: 'Suranna, serif' }}>
                     {exp.role}
                   </h3>
-                  <p className="text-[#029AFF] text-lg mb-2">{exp.company}</p>
-                  <p className="text-[#00FFFF] text-sm mb-3">{exp.period}</p>
-                  <p className="text-white/70">{exp.description}</p>
+                  <p className="text-[#029AFF] text-lg mb-1">{exp.company}</p>
+                  <p className="text-[#00FFFF] text-sm mb-1">{exp.period}</p>
+                  <p className="text-white/40 text-xs mb-3">{exp.location}</p>
+                  <p className="text-white/70 text-sm leading-relaxed">{exp.description}</p>
                 </div>
               </motion.div>
             ))}
