@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'motion/react';
-import { Mail, Linkedin, Github, ChevronDown, MapPin, Calendar, ImagePlus, User } from 'lucide-react';
+import { Mail, Linkedin, Github, ChevronDown, MapPin, Calendar, ImagePlus, User, Instagram, Twitter, Facebook } from 'lucide-react';
 import { translations, Lang } from './translations';
 
 // ─── Palette ───────────────────────────────────────────────────────────────
@@ -849,12 +849,15 @@ export default function App() {
 
           <motion.div
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-            className="flex justify-center gap-5 mb-10"
+            className="flex flex-wrap justify-center gap-4 mb-10"
           >
             {[
-              { icon: Mail,     label: 'Email',    href: 'mailto:abdullah.mushtaq6876@gmail.com' },
-              { icon: Linkedin, label: 'LinkedIn', href: 'https://www.linkedin.com/in/abdullah-mohammad-mushtaq/' },
-              { icon: Github,   label: 'GitHub',   href: 'https://github.com/AbdullahMushtaq67' },
+              { icon: Mail,      label: 'Email',     href: 'mailto:abdullah.mushtaq6876@gmail.com' },
+              { icon: Linkedin,  label: 'LinkedIn',  href: 'https://www.linkedin.com/in/abdullah-mohammad-mushtaq/' },
+              { icon: Github,    label: 'GitHub',    href: 'https://github.com/AbdullahMushtaq67/AbdullahMushtaq67' },
+              { icon: Instagram, label: 'Instagram', href: '#' },
+              { icon: Twitter,   label: 'Twitter',   href: '#' },
+              { icon: Facebook,  label: 'Facebook',  href: '#' },
             ].map((s, i) => (
               <motion.a
                 key={i}
