@@ -1,7 +1,16 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'motion/react';
-import { Mail, Linkedin, Github, ChevronDown, MapPin, Calendar, ImagePlus, User, Instagram, Twitter, Facebook } from 'lucide-react';
+import { Mail, Linkedin, Github, ChevronDown, MapPin, Calendar, ImagePlus, User, Instagram, Facebook } from 'lucide-react';
+
 import { translations, Lang } from './translations';
+
+function XIcon({ size = 22 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117Z" />
+    </svg>
+  );
+}
 
 // ─── Palette ───────────────────────────────────────────────────────────────
 const C = {
@@ -855,9 +864,9 @@ export default function App() {
               { icon: Mail,      label: 'Email',     href: 'mailto:abdullah.mushtaq6876@gmail.com' },
               { icon: Linkedin,  label: 'LinkedIn',  href: 'https://www.linkedin.com/in/abdullah-mohammad-mushtaq/' },
               { icon: Github,    label: 'GitHub',    href: 'https://github.com/AbdullahMushtaq67/AbdullahMushtaq67' },
-              { icon: Instagram, label: 'Instagram', href: '#' },
-              { icon: Twitter,   label: 'Twitter',   href: '#' },
-              { icon: Facebook,  label: 'Facebook',  href: '#' },
+              { icon: Instagram, label: 'Instagram', href: 'https://www.instagram.com/am_2k2_?igsh=MWJyc2VtMHF6cHpzMQ%3D%3D&utm_source=qr' },
+              { icon: XIcon,     label: 'X',         href: 'https://x.com/__abdullah20__?s=11' },
+              { icon: Facebook,  label: 'Facebook',  href: 'https://www.facebook.com/share/1ESTADtLDz/?mibextid=wwXIfr' },
             ].map((s, i) => (
               <motion.a
                 key={i}
