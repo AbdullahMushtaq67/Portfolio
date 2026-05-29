@@ -220,6 +220,7 @@ function Tag({ children }: { children: React.ReactNode }) {
 export default function App() {
   const [expandedCert, setExpandedCert] = useState<string | null>(null);
   const [lang, setLang] = useState<Lang>('en');
+  const [lightboxImg, setLightboxImg] = useState<string | null>(null);
 
   const t = translations[lang];
 
@@ -578,12 +579,23 @@ export default function App() {
                 className="rounded-xl overflow-hidden flex flex-col"
                 style={{ background: C.card, border: `1px solid ${C.border}` }}
               >
-                <div style={{ height: 200, overflow: 'hidden', flexShrink: 0 }}>
+                <div
+                  onClick={() => setLightboxImg(a.img)}
+                  style={{ height: 200, overflow: 'hidden', flexShrink: 0, position: 'relative', cursor: 'pointer' }}
+                  className="group"
+                >
                   <img
                     src={a.img}
                     alt={a.issuer}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', transition: 'transform 0.3s ease' }}
+                    className="group-hover:scale-105"
                   />
+                  <div
+                    className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    style={{ background: 'rgba(0,0,0,0.45)' }}
+                  >
+                    <span className="text-white text-xs font-semibold tracking-widest uppercase px-3 py-1.5 rounded-full" style={{ background: 'rgba(62,124,177,0.85)' }}>Click to view</span>
+                  </div>
                 </div>
                 <div className="p-5 flex flex-col gap-2 flex-1">
                   <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: C.accent }}>{a.type}</span>
@@ -855,6 +867,41 @@ export default function App() {
           </p>
         </div>
       </section>
+
+      {/* ── Lightbox ── */}
+      {lightboxImg && (
+        <div
+          onClick={() => setLightboxImg(null)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 9999,
+            background: 'rgba(0,0,0,0.85)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: '24px',
+          }}
+        >
+          <button
+            onClick={() => setLightboxImg(null)}
+            style={{
+              position: 'absolute', top: 20, right: 24,
+              background: 'rgba(255,255,255,0.12)',
+              border: 'none', borderRadius: '50%',
+              width: 40, height: 40, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: '#fff', fontSize: '1.2rem', lineHeight: 1,
+            }}
+          >✕</button>
+          <img
+            src={lightboxImg}
+            alt="Achievement"
+            onClick={e => e.stopPropagation()}
+            style={{
+              maxWidth: '90vw', maxHeight: '88vh',
+              borderRadius: 12, objectFit: 'contain',
+              boxShadow: '0 8px 48px rgba(0,0,0,0.6)',
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
