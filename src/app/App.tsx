@@ -4,9 +4,9 @@ import { Mail, Linkedin, Github, ChevronDown, MapPin, Calendar, ImagePlus, User,
 
 import { translations, Lang } from './translations';
 
-function XIcon({ size = 22 }: { size?: number }) {
+function XIcon({ size = 22, style }: { size?: number; style?: React.CSSProperties }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" style={style}>
       <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117Z" />
     </svg>
   );
@@ -479,7 +479,7 @@ export default function App() {
               <div className="space-y-3 text-sm" style={{ color: C.muted }}>
                 {[
                   { label: t.aboutLocation, value: t.aboutLocationVal },
-                  { label: t.aboutEmail, value: 'abdullah.mushtaq6876@gmail.com' },
+                  { label: t.aboutEmail, value: 'abdullah.mushtaq6876@gmail.com', link: 'mailto:abdullah.mushtaq6876@gmail.com' },
                   { label: t.aboutLinkedIn, value: t.aboutLinkedInVal, link: 'https://www.linkedin.com/in/abdullah-mohammad-mushtaq/' },
                   { label: t.aboutCerts, value: t.aboutCertsVal },
                   { label: t.aboutExp, value: t.aboutExpVal },
