@@ -497,11 +497,17 @@ export default function App() {
         <div className="max-w-4xl mx-auto">
           <SectionHeading>{t.eduHeading}</SectionHeading>
           <div className="space-y-6">
-            {t.education.map((edu, i) => (
+            {t.education.map((edu, i) => {
+              const EDU_LOGOS = ['/logo-iu.png', '/logo-iu.png', '/logo-alhosn.png'];
+              return (
               <Card key={i} delay={i * 0.1}>
                 <div className="flex gap-5 items-start">
                   <div className="flex-shrink-0">
-                    <ImgPlaceholder width={56} height={56} label="Logo" />
+                    <img
+                      src={EDU_LOGOS[i]}
+                      alt="Institution logo"
+                      style={{ width: 56, height: 56, objectFit: 'contain', borderRadius: 8, background: '#fff', padding: 4 }}
+                    />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
@@ -517,7 +523,8 @@ export default function App() {
                   </div>
                 </div>
               </Card>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
