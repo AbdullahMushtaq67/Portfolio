@@ -498,7 +498,7 @@ export default function App() {
           <SectionHeading>{t.eduHeading}</SectionHeading>
           <div className="space-y-6">
             {t.education.map((edu, i) => {
-              const EDU_LOGOS = ['/logo-iu.png', '/logo-iu.png', '/logo-alhosn.png'];
+              const EDU_LOGOS = ['/logo-iu.png', '/logo-ict.jpg', '/logo-alhosn.png'];
               return (
               <Card key={i} delay={i * 0.1}>
                 <div className="flex gap-5 items-start">
