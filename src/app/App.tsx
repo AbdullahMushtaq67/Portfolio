@@ -535,39 +535,60 @@ export default function App() {
       <section id="achievements" className="py-28 px-6 relative" style={{ background: C.bg1, zIndex: 1 }}>
         <div className="max-w-6xl mx-auto">
           <SectionHeading>{t.achHeading}</SectionHeading>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { number: '46+',  idx: 0 },
-              { number: '6',    idx: 1 },
-              { number: '4+',   idx: 2 },
-              { number: '15+',  idx: 3 },
-              { number: '6',    idx: 4 },
-              { number: '85%',  idx: 5 },
+              {
+                img: '/ach-gdgoc.jpg',
+                issuer: 'GDGoC — FAST Islamabad',
+                type: 'Certificate of Appreciation',
+                desc: 'Awarded by Google Developer Groups on Campus (GDGoC) at FAST Islamabad for participating in Promptopia Ver 2.0 on November 21st, 2025. The event showcased creative AI prompt engineering where participants competed in designing effective prompts for real-world applications. Recognition was signed by Campus Lead Kainat Khalid in acknowledgment of active engagement and contribution to the AI community.',
+              },
+              {
+                img: '/ach-paktech.jpg',
+                issuer: 'PakTech Nation',
+                type: 'Featured Professional Recognition',
+                desc: 'Featured by PakTech Nation (Pakistan Digital Youth) in collaboration with Sitearche as a skilled professional in Cybersecurity & GRC, certified in ISO 27001:2022, from Islamabad, Pakistan. The spotlight highlights outstanding contributions to Pakistan\'s digital youth landscape and professional standing as a certified cybersecurity practitioner with demonstrated expertise in governance, risk, and compliance.',
+              },
+              {
+                img: '/ach-datayard.jpg',
+                issuer: 'DataYard — Agentic AI Meetup',
+                type: 'Certificate of Participation',
+                desc: 'Issued by DataYard (Professional eLearning Partner) for participation in the Agentic AI Meetup Islamabad and successful completion of Claude and n8n masterclasses on AI-powered workflow automation. The event, co-hosted at CoWork with Cheezious, focused on practical agentic AI applications and automation pipelines. Signed by the Founder of AI DataYard and issued on 23rd May 2026.',
+              },
+              {
+                img: '/ach-cybersecure.jpg',
+                issuer: 'Cyber Secure Pakistan / Jang Media Group',
+                type: 'Certificate of Participation',
+                desc: 'Awarded jointly by Jang Media Group, Cyber Secure Pakistan, Jang Cultural Wing, and the Government of Pakistan for successfully participating in the Cyber Secure Pakistan Conference 2026. Recognized for active interest and engagement in promoting cybersecurity awareness, digital innovation, and technological advancement across Pakistan. Dated 11th March 2026.',
+              },
+              {
+                img: '/ach-indusai.jpg',
+                issuer: 'Ministry of IT & Telecom — Indus AI Week',
+                type: 'Certificate of Participation',
+                desc: 'Awarded for participating in the National AI Training Bootcamp organized under Indus AI Week, held from 9th–10th February 2026. The national-level initiative was organized by the Ministry of Information Technology & Telecom to enhance hands-on skills in Artificial Intelligence and emerging digital technologies. Delivered by leading industry experts in association with Tech Nation Pakistan and PSEB.',
+              },
             ].map((a, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, scale: 0.92 }}
-                whileInView={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08 }}
                 whileHover={{ y: -4 }}
-                className="rounded-xl overflow-hidden"
+                className="rounded-xl overflow-hidden flex flex-col"
                 style={{ background: C.card, border: `1px solid ${C.border}` }}
               >
-                <ImgPlaceholder height={100} label="Achievement Image" />
-                <div className="p-6 text-center">
-                  <div
-                    style={{
-                      fontFamily: 'Oswald, sans-serif',
-                      fontWeight: 700,
-                      fontSize: '2.4rem',
-                      color: C.accent,
-                      lineHeight: 1,
-                    }}
-                  >
-                    {a.number}
-                  </div>
-                  <div className="mt-2 text-sm" style={{ color: C.muted }}>{t.achLabels[a.idx]}</div>
+                <div style={{ height: 200, overflow: 'hidden', flexShrink: 0 }}>
+                  <img
+                    src={a.img}
+                    alt={a.issuer}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
+                  />
+                </div>
+                <div className="p-5 flex flex-col gap-2 flex-1">
+                  <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: C.accent }}>{a.type}</span>
+                  <h3 style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, fontSize: '1rem', color: C.text, lineHeight: 1.3 }}>{a.issuer}</h3>
+                  <p className="text-xs leading-relaxed" style={{ color: C.muted }}>{a.desc}</p>
                 </div>
               </motion.div>
             ))}
