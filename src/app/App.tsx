@@ -680,7 +680,16 @@ export default function App() {
         <div className="max-w-7xl mx-auto">
           <SectionHeading>{t.projHeading}</SectionHeading>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {t.projects.map((p, i) => (
+            {t.projects.map((p, i) => {
+              const PROJ_IMGS = [
+                '/proj-leafai.jpg',
+                '/proj-climacast.jpg',
+                '/proj-encryption.jpg',
+                '/proj-phishing.jpg',
+                '/proj-network.jpg',
+                '/proj-autopaper.jpg',
+              ];
+              return (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 24 }}
@@ -691,7 +700,24 @@ export default function App() {
                 className="rounded-xl overflow-hidden"
                 style={{ background: C.card, border: `1px solid ${C.border}`, transition: 'border-color 0.2s' }}
               >
-                <ImgPlaceholder height={150} label="Project Screenshot" />
+                <div
+                  onClick={() => setLightboxImg(PROJ_IMGS[i])}
+                  style={{ height: 150, overflow: 'hidden', position: 'relative', cursor: 'pointer' }}
+                  className="group"
+                >
+                  <img
+                    src={PROJ_IMGS[i]}
+                    alt={p.title}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', transition: 'transform 0.3s ease' }}
+                    className="group-hover:scale-105"
+                  />
+                  <div
+                    className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    style={{ background: 'rgba(0,0,0,0.45)' }}
+                  >
+                    <span className="text-white text-xs font-semibold tracking-widest uppercase px-3 py-1.5 rounded-full" style={{ background: 'rgba(62,124,177,0.85)' }}>Click to view</span>
+                  </div>
+                </div>
                 <div className="p-6">
                   <div className="flex items-start justify-between gap-3 mb-2">
                     <h3 style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, fontSize: '1rem', color: C.text, lineHeight: 1.3 }}>
@@ -710,7 +736,8 @@ export default function App() {
                   </div>
                 </div>
               </motion.div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
