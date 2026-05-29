@@ -458,9 +458,13 @@ export default function App() {
               className="rounded-xl p-8 text-center"
               style={{ background: C.card, border: `1px solid ${C.border}` }}
             >
-              {/* Profile Picture Placeholder */}
+              {/* Profile Picture */}
               <div className="flex justify-center mb-5">
-                <ImgPlaceholder width={120} height={120} round label="Profile Photo" />
+                <img
+                  src="/profile.jpg"
+                  alt="Abdullah Mohammad Mushtaq"
+                  style={{ width: 120, height: 120, borderRadius: '50%', objectFit: 'cover', objectPosition: 'center top', border: `2px solid ${C.border}` }}
+                />
               </div>
               <div className="space-y-3 text-sm" style={{ color: C.muted }}>
                 {[
