@@ -682,12 +682,12 @@ export default function App() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {t.projects.map((p, i) => {
               const PROJ_IMGS = [
-                '/proj-leafai.jpg',
+                '/proj-autopaper.jpg',
                 '/proj-climacast.jpg',
                 '/proj-encryption.jpg',
-                '/proj-phishing.jpg',
                 '/proj-network.jpg',
-                '/proj-autopaper.jpg',
+                '/proj-phishing.jpg',
+                '/proj-leafai.jpg',
               ];
               return (
               <motion.div
