@@ -568,6 +568,12 @@ export default function App() {
                 type: 'Certificate of Participation',
                 desc: 'Awarded for participating in the National AI Training Bootcamp organized under Indus AI Week, held from 9th–10th February 2026. The national-level initiative was organized by the Ministry of Information Technology & Telecom to enhance hands-on skills in Artificial Intelligence and emerging digital technologies. Delivered by leading industry experts in association with Tech Nation Pakistan and PSEB.',
               },
+              {
+                img: '/ach-stanford.jpg',
+                issuer: 'Stanford University — Code in Place 2026',
+                type: 'Acceptance — Top 0.1% Worldwide',
+                desc: 'Selected for Stanford Code in Place 2026 from over 100,000 global applicants, placing in the top 0.1% worldwide. Offered by Leland Stanford Junior University, this prestigious program brings together exceptional learners from across the globe to study foundational programming under Stanford faculty. Recognition reflects outstanding academic potential, motivation, and commitment to innovation, creation, and impact.',
+              },
             ].map((a, i) => (
               <motion.div
                 key={i}
