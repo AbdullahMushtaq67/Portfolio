@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
 import { motion } from 'motion/react';
 import { Mail, Linkedin, Github, ChevronDown, MapPin, Calendar, ImagePlus, User, Instagram, Facebook } from 'lucide-react';
 
@@ -225,6 +225,135 @@ function Tag({ children }: { children: React.ReactNode }) {
   );
 }
 
+// ─── Tech Line Border Button ─────────────────────────────────────────────────
+const TECH_KEYFRAMES = `
+  @keyframes techBorderCW  { to { stroke-dashoffset: -1000; } }
+  @keyframes techBorderCCW { to { stroke-dashoffset:  1000; } }
+`;
+
+function TechLineButton({
+  children, onClick, primary = false,
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  primary?: boolean;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const [dims, setDims] = useState({ w: 160, h: 50 });
+
+  useLayoutEffect(() => {
+    if (btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect();
+      setDims({ w: r.width, h: r.height });
+    }
+  }, []);
+
+  const pad = 5;
+  const svgW = dims.w + pad * 2;
+  const svgH = dims.h + pad * 2;
+  const perim = 2 * (svgW + svgH);
+  const dash = 64;
+  const gap  = perim - dash;
+
+  return (
+    <div
+      style={{ position: 'relative', display: 'inline-block' }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <button
+        ref={btnRef}
+        onClick={onClick}
+        className="px-8 py-3 rounded font-semibold tracking-widest text-sm uppercase transition-all"
+        style={{
+          fontFamily: 'Oswald, sans-serif',
+          background: primary ? C.accent : 'transparent',
+          color: primary ? '#fff' : C.muted,
+          border: primary ? 'none' : `1px solid ${C.border}`,
+        }}
+        onMouseEnter={e => {
+          if (primary) e.currentTarget.style.background = C.accentHi;
+          else { e.currentTarget.style.borderColor = C.accent; e.currentTarget.style.color = C.text; }
+        }}
+        onMouseLeave={e => {
+          if (primary) e.currentTarget.style.background = C.accent;
+          else { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.muted; }
+        }}
+      >
+        {children}
+      </button>
+
+      {/* Animated tech border overlay */}
+      <svg
+        style={{
+          position: 'absolute',
+          top: -pad, left: -pad,
+          width: svgW, height: svgH,
+          pointerEvents: 'none',
+          opacity: hovered ? 1 : 0,
+          transition: 'opacity 0.25s',
+          overflow: 'visible',
+        }}
+      >
+        {/* Line 1 — clockwise, bright accent */}
+        <rect
+          x={1.5} y={1.5}
+          width={svgW - 3} height={svgH - 3}
+          rx={6}
+          fill="none"
+          stroke={C.accentHi}
+          strokeWidth={1.8}
+          strokeLinecap="square"
+          strokeDasharray={`${dash} ${gap}`}
+          strokeDashoffset={0}
+          style={{ animation: 'techBorderCW 2s linear infinite' }}
+        />
+        {/* Arrow tick at head of line 1 */}
+        <rect
+          x={1.5} y={1.5}
+          width={svgW - 3} height={svgH - 3}
+          rx={6}
+          fill="none"
+          stroke={C.accentHi}
+          strokeWidth={2.5}
+          strokeLinecap="butt"
+          strokeDasharray={`4 ${perim - 4}`}
+          strokeDashoffset={-dash + 4}
+          style={{ animation: 'techBorderCW 2s linear infinite' }}
+        />
+
+        {/* Line 2 — counter-clockwise, softer accent */}
+        <rect
+          x={1.5} y={1.5}
+          width={svgW - 3} height={svgH - 3}
+          rx={6}
+          fill="none"
+          stroke={C.accent}
+          strokeWidth={1.8}
+          strokeLinecap="square"
+          strokeDasharray={`${dash} ${gap}`}
+          strokeDashoffset={perim / 2}
+          style={{ animation: 'techBorderCCW 2s linear infinite' }}
+        />
+        {/* Arrow tick at head of line 2 */}
+        <rect
+          x={1.5} y={1.5}
+          width={svgW - 3} height={svgH - 3}
+          rx={6}
+          fill="none"
+          stroke={C.accent}
+          strokeWidth={2.5}
+          strokeLinecap="butt"
+          strokeDasharray={`4 ${perim - 4}`}
+          strokeDashoffset={perim / 2 + dash - 4}
+          style={{ animation: 'techBorderCCW 2s linear infinite' }}
+        />
+      </svg>
+    </div>
+  );
+}
+
 // ─── Main App ───────────────────────────────────────────────────────────────
 export default function App() {
   const [expandedCert, setExpandedCert] = useState<string | null>(null);
@@ -317,6 +446,9 @@ export default function App() {
   return (
     <div style={{ background: C.bg0, color: C.text, fontFamily: 'Inter, sans-serif', minHeight: '100vh', overflowX: 'hidden' }}>
 
+      {/* Tech border keyframes */}
+      <style>{TECH_KEYFRAMES}</style>
+
       {/* Animated Network Background */}
       <NetworkCanvas />
 
@@ -407,33 +539,12 @@ export default function App() {
             initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.9 }}
             className="flex items-center justify-center gap-4"
           >
-            <button
-              onClick={() => scrollTo('contact')}
-              className="px-8 py-3 rounded font-semibold tracking-widest text-sm uppercase transition-all"
-              style={{
-                fontFamily: 'Oswald, sans-serif',
-                background: C.accent,
-                color: '#fff',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.background = C.accentHi)}
-              onMouseLeave={e => (e.currentTarget.style.background = C.accent)}
-            >
+            <TechLineButton primary onClick={() => scrollTo('contact')}>
               {t.heroCta1}
-            </button>
-            <button
-              onClick={() => scrollTo('projects')}
-              className="px-8 py-3 rounded font-semibold tracking-widest text-sm uppercase transition-all"
-              style={{
-                fontFamily: 'Oswald, sans-serif',
-                background: 'transparent',
-                border: `1px solid ${C.border}`,
-                color: C.muted,
-              }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = C.accent; e.currentTarget.style.color = C.text; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.muted; }}
-            >
+            </TechLineButton>
+            <TechLineButton onClick={() => scrollTo('projects')}>
               {t.heroCta2}
-            </button>
+            </TechLineButton>
           </motion.div>
 
         </div>
@@ -547,43 +658,15 @@ export default function App() {
           <SectionHeading>{t.achHeading}</SectionHeading>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              {
-                img: '/ach-gdgoc.jpg',
-                issuer: 'GDGoC — FAST Islamabad',
-                type: 'Certificate of Appreciation',
-                desc: 'Awarded by Google Developer Groups on Campus (GDGoC) at FAST Islamabad for participating in Promptopia Ver 2.0 on November 21st, 2025. The event showcased creative AI prompt engineering where participants competed in designing effective prompts for real-world applications. Recognition was signed by Campus Lead Kainat Khalid in acknowledgment of active engagement and contribution to the AI community.',
-              },
-              {
-                img: '/ach-paktech.jpg',
-                issuer: 'PakTech Nation',
-                type: 'Featured Professional Recognition',
-                desc: 'Featured by PakTech Nation (Pakistan Digital Youth) in collaboration with Sitearche as a skilled professional in Cybersecurity & GRC, certified in ISO 27001:2022, from Islamabad, Pakistan. The spotlight highlights outstanding contributions to Pakistan\'s digital youth landscape and professional standing as a certified cybersecurity practitioner with demonstrated expertise in governance, risk, and compliance.',
-              },
-              {
-                img: '/ach-datayard.jpg',
-                issuer: 'DataYard — Agentic AI Meetup',
-                type: 'Certificate of Participation',
-                desc: 'Issued by DataYard (Professional eLearning Partner) for participation in the Agentic AI Meetup Islamabad and successful completion of Claude and n8n masterclasses on AI-powered workflow automation. The event, co-hosted at CoWork with Cheezious, focused on practical agentic AI applications and automation pipelines. Signed by the Founder of AI DataYard and issued on 23rd May 2026.',
-              },
-              {
-                img: '/ach-cybersecure.jpg',
-                issuer: 'Cyber Secure Pakistan / Jang Media Group',
-                type: 'Certificate of Participation',
-                desc: 'Awarded jointly by Jang Media Group, Cyber Secure Pakistan, Jang Cultural Wing, and the Government of Pakistan for successfully participating in the Cyber Secure Pakistan Conference 2026. Recognized for active interest and engagement in promoting cybersecurity awareness, digital innovation, and technological advancement across Pakistan. Dated 11th March 2026.',
-              },
-              {
-                img: '/ach-indusai.jpg',
-                issuer: 'Ministry of IT & Telecom — Indus AI Week',
-                type: 'Certificate of Participation',
-                desc: 'Awarded for participating in the National AI Training Bootcamp organized under Indus AI Week, held from 9th–10th February 2026. The national-level initiative was organized by the Ministry of Information Technology & Telecom to enhance hands-on skills in Artificial Intelligence and emerging digital technologies. Delivered by leading industry experts in association with Tech Nation Pakistan and PSEB.',
-              },
-              {
-                img: '/ach-stanford.jpg',
-                issuer: 'Stanford University — Code in Place 2026',
-                type: 'Acceptance — Top 0.1% Worldwide',
-                desc: 'Selected for Stanford Code in Place 2026 from over 100,000 global applicants, placing in the top 0.1% worldwide. Offered by Leland Stanford Junior University, this prestigious program brings together exceptional learners from across the globe to study foundational programming under Stanford faculty. Recognition reflects outstanding academic potential, motivation, and commitment to innovation, creation, and impact.',
-              },
-            ].map((a, i) => (
+              '/ach-gdgoc.jpg',
+              '/ach-paktech.jpg',
+              '/ach-datayard.jpg',
+              '/ach-cybersecure.jpg',
+              '/ach-indusai.jpg',
+              '/ach-stanford.jpg',
+            ].map((img, i) => {
+              const a = { img, ...t.achItems[i] };
+              return (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
@@ -609,7 +692,7 @@ export default function App() {
                     className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                     style={{ background: 'rgba(0,0,0,0.45)' }}
                   >
-                    <span className="text-white text-xs font-semibold tracking-widest uppercase px-3 py-1.5 rounded-full" style={{ background: 'rgba(62,124,177,0.85)' }}>Click to view</span>
+                    <span className="text-white text-xs font-semibold tracking-widest uppercase px-3 py-1.5 rounded-full" style={{ background: 'rgba(62,124,177,0.85)' }}>{t.clickToView}</span>
                   </div>
                 </div>
                 <div className="p-5 flex flex-col gap-2 flex-1">
@@ -618,7 +701,8 @@ export default function App() {
                   <p className="text-xs leading-relaxed" style={{ color: C.muted }}>{a.desc}</p>
                 </div>
               </motion.div>
-            ))}
+            );
+            })}
           </div>
         </div>
       </section>
@@ -724,7 +808,7 @@ export default function App() {
                     className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                     style={{ background: 'rgba(0,0,0,0.45)' }}
                   >
-                    <span className="text-white text-xs font-semibold tracking-widest uppercase px-3 py-1.5 rounded-full" style={{ background: 'rgba(62,124,177,0.85)' }}>Click to view</span>
+                    <span className="text-white text-xs font-semibold tracking-widest uppercase px-3 py-1.5 rounded-full" style={{ background: 'rgba(62,124,177,0.85)' }}>{t.clickToView}</span>
                   </div>
                 </div>
                 <div className="p-6">
@@ -845,8 +929,29 @@ export default function App() {
       <Divider />
 
       {/* ── Contact ── */}
-      <section id="contact" className="py-28 px-6 relative" style={{ background: C.bg2, zIndex: 1 }}>
-        <div className="max-w-2xl mx-auto text-center">
+      <section id="contact" className="py-28 px-6 relative" style={{ background: C.bg2, zIndex: 1, overflow: 'hidden' }}>
+        {/* Video background */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            opacity: 0.22,
+            zIndex: 0,
+          }}
+        >
+          <source src="https://res.cloudinary.com/da76ww9ps/video/upload/v1780397998/security-video-BYriqXQY_nfmcn0.webm" type="video/webm" />
+        </video>
+        {/* Dark overlay to maintain readability */}
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(11,17,32,0.6) 0%, rgba(11,17,32,0.45) 100%)', zIndex: 1 }} />
+
+        <div className="max-w-2xl mx-auto text-center" style={{ position: 'relative', zIndex: 2 }}>
           <SectionHeading>{t.contactHeading}</SectionHeading>
           <motion.p
             initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}

@@ -79,6 +79,10 @@ export interface Translation {
   coreCompHeading: string;
   coreCompetencies: string[];
 
+  // Achievements cards
+  achItems: Array<{ issuer: string; type: string; desc: string }>;
+  clickToView: string;
+
   // Contact
   contactHeading: string;
   contactDesc: string;
@@ -253,6 +257,40 @@ const en: Translation = {
     'Social Media Management', 'Business Intelligence', 'IT Project Management',
     'AI & Emerging Technologies', 'Cross-functional Team Collaboration', 'Stakeholder Management',
   ],
+
+  achItems: [
+    {
+      issuer: 'GDGoC — FAST Islamabad',
+      type: 'Certificate of Appreciation',
+      desc: 'Awarded by Google Developer Groups on Campus (GDGoC) at FAST Islamabad for participating in Promptopia Ver 2.0 on November 21st, 2025. The event showcased creative AI prompt engineering where participants competed in designing effective prompts for real-world applications. Recognition was signed by Campus Lead Kainat Khalid in acknowledgment of active engagement and contribution to the AI community.',
+    },
+    {
+      issuer: 'PakTech Nation',
+      type: 'Featured Professional Recognition',
+      desc: "Featured by PakTech Nation (Pakistan Digital Youth) in collaboration with Sitearche as a skilled professional in Cybersecurity & GRC, certified in ISO 27001:2022, from Islamabad, Pakistan. The spotlight highlights outstanding contributions to Pakistan's digital youth landscape and professional standing as a certified cybersecurity practitioner with demonstrated expertise in governance, risk, and compliance.",
+    },
+    {
+      issuer: 'DataYard — Agentic AI Meetup',
+      type: 'Certificate of Participation',
+      desc: 'Issued by DataYard (Professional eLearning Partner) for participation in the Agentic AI Meetup Islamabad and successful completion of Claude and n8n masterclasses on AI-powered workflow automation. The event, co-hosted at CoWork with Cheezious, focused on practical agentic AI applications and automation pipelines. Signed by the Founder of AI DataYard and issued on 23rd May 2026.',
+    },
+    {
+      issuer: 'Cyber Secure Pakistan / Jang Media Group',
+      type: 'Certificate of Participation',
+      desc: 'Awarded jointly by Jang Media Group, Cyber Secure Pakistan, Jang Cultural Wing, and the Government of Pakistan for successfully participating in the Cyber Secure Pakistan Conference 2026. Recognized for active interest and engagement in promoting cybersecurity awareness, digital innovation, and technological advancement across Pakistan. Dated 11th March 2026.',
+    },
+    {
+      issuer: 'Ministry of IT & Telecom — Indus AI Week',
+      type: 'Certificate of Participation',
+      desc: 'Awarded for participating in the National AI Training Bootcamp organized under Indus AI Week, held from 9th–10th February 2026. The national-level initiative was organized by the Ministry of Information Technology & Telecom to enhance hands-on skills in Artificial Intelligence and emerging digital technologies. Delivered by leading industry experts in association with Tech Nation Pakistan and PSEB.',
+    },
+    {
+      issuer: 'Stanford University — Code in Place 2026',
+      type: 'Acceptance — Top 0.1% Worldwide',
+      desc: 'Selected for Stanford Code in Place 2026 from over 100,000 global applicants, placing in the top 0.1% worldwide. Offered by Leland Stanford Junior University, this prestigious program brings together exceptional learners from across the globe to study foundational programming under Stanford faculty. Recognition reflects outstanding academic potential, motivation, and commitment to innovation, creation, and impact.',
+    },
+  ],
+  clickToView: 'Click to view',
 
   contactHeading: "Let's Connect",
   contactDesc: 'Open to cybersecurity opportunities, GRC consulting, network architecture projects or knowledge exchange. Reach out through any channel below.',
@@ -436,6 +474,40 @@ const ar: Translation = {
     'إدارة أصحاب المصلحة',
   ],
 
+  achItems: [
+    {
+      issuer: 'GDGoC — FAST Islamabad',
+      type: 'شهادة تقدير',
+      desc: 'مُمنحة من مجموعات مطوري Google في الحرم الجامعي (GDGoC) بجامعة FAST إسلام آباد للمشاركة في فعالية Promptopia الإصدار 2.0 بتاريخ 21 نوفمبر 2025. أبرزت الفعالية هندسة مطالبات الذكاء الاصطناعي الإبداعية حيث تنافس المشاركون في تصميم مطالبات فعّالة للتطبيقات الواقعية. وُقِّعت الشهادة من قِبل قائدة الحرم الجامعي كيانات خالد تقديرًا للمشاركة الفعّالة والإسهام في مجتمع الذكاء الاصطناعي.',
+    },
+    {
+      issuer: 'PakTech Nation',
+      type: 'تقدير مهني مميز',
+      desc: 'تم تسليط الضوء عليه من قِبل PakTech Nation (شباب باكستان الرقمي) بالتعاون مع Sitearche بوصفه متخصصًا ماهرًا في الأمن السيبراني وإدارة المخاطر والامتثال، وحاصلًا على شهادة ISO 27001:2022 من إسلام آباد، باكستان. يُبرز هذا التقدير المساهمات البارزة في مشهد الشباب الرقمي في باكستان والمكانة المهنية كممارس معتمد في الأمن السيبراني.',
+    },
+    {
+      issuer: 'DataYard — Agentic AI Meetup',
+      type: 'شهادة مشاركة',
+      desc: 'صادرة عن DataYard (شريك التعليم الإلكتروني المحترف) للمشاركة في لقاء الذكاء الاصطناعي الوكيل إسلام آباد وإتمام دورتَي Claude وn8n المتخصصتين في أتمتة سير العمل المدعومة بالذكاء الاصطناعي. ركّز اللقاء المشترك في CoWork على تطبيقات الذكاء الاصطناعي الوكيل العملية وخطوط أنابيب الأتمتة. وقّعه مؤسس AI DataYard وصدر في 23 مايو 2026.',
+    },
+    {
+      issuer: 'Cyber Secure Pakistan / Jang Media Group',
+      type: 'شهادة مشاركة',
+      desc: 'مُمنحة مشتركًا من مجموعة جانج الإعلامية وCyber Secure Pakistan والجناح الثقافي لجانج وحكومة باكستان للمشاركة في مؤتمر Cyber Secure Pakistan 2026. تُقدِّر الاهتمام النشط والمشاركة في تعزيز الوعي بالأمن السيبراني والابتكار الرقمي والتقدم التكنولوجي في باكستان. مؤرخة في 11 مارس 2026.',
+    },
+    {
+      issuer: 'وزارة تكنولوجيا المعلومات — أسبوع إندوس للذكاء الاصطناعي',
+      type: 'شهادة مشاركة',
+      desc: 'مُمنحة للمشاركة في المعسكر التدريبي الوطني للذكاء الاصطناعي المنظَّم ضمن أسبوع إندوس للذكاء الاصطناعي خلال الفترة 9–10 فبراير 2026. نظّمت المبادرة الوطنية وزارة تكنولوجيا المعلومات والاتصالات لتعزيز المهارات العملية في الذكاء الاصطناعي والتقنيات الرقمية الناشئة، وأُسهم فيها خبراء صناعيون بارزون بالتعاون مع Tech Nation Pakistan وPSEB.',
+    },
+    {
+      issuer: 'Stanford University — Code in Place 2026',
+      type: 'قبول — ضمن أفضل 0.1% عالميًا',
+      desc: 'جرى اختياره في برنامج Stanford Code in Place 2026 من بين أكثر من 100,000 متقدم حول العالم، محتلًا مكانة ضمن أفضل 0.1% عالميًا. يجمع هذا البرنامج المرموق الذي تقدمه جامعة ليلاند ستانفورد متعلمين استثنائيين من مختلف أنحاء العالم لدراسة أساسيات البرمجة تحت إشراف أعضاء هيئة التدريس بجامعة ستانفورد. يعكس الاختيار الإمكانات الأكاديمية البارزة والتحفيز والالتزام بالابتكار والإبداع وإحداث الأثر.',
+    },
+  ],
+  clickToView: 'اضغط للعرض',
+
   contactHeading: 'تواصل معي',
   contactDesc: 'منفتح على فرص الأمن السيبراني واستشارات إدارة المخاطر ومشاريع بنية الشبكات وتبادل المعرفة. تواصل معي عبر أي قناة أدناه.',
   contactCta: 'أرسل رسالة',
@@ -617,6 +689,40 @@ const de: Translation = {
     'Funktionsübergreifende Teamarbeit',
     'Stakeholder-Management',
   ],
+
+  achItems: [
+    {
+      issuer: 'GDGoC — FAST Islamabad',
+      type: 'Anerkennungsurkunde',
+      desc: 'Verliehen von den Google Developer Groups on Campus (GDGoC) an der FAST Islamabad für die Teilnahme an Promptopia Ver 2.0 am 21. November 2025. Die Veranstaltung präsentierte kreatives KI-Prompt-Engineering, bei dem die Teilnehmer im Entwerfen effektiver Prompts für reale Anwendungen wetteiferten. Die Auszeichnung wurde vom Campus Lead Kainat Khalid als Anerkennung für aktives Engagement und Beiträge zur KI-Community unterzeichnet.',
+    },
+    {
+      issuer: 'PakTech Nation',
+      type: 'Ausgezeichnete Fachkraft',
+      desc: 'Von PakTech Nation (Pakistan Digital Youth) in Zusammenarbeit mit Sitearche als kompetenter Fachmann für Cybersicherheit und GRC, zertifiziert nach ISO 27001:2022, aus Islamabad, Pakistan, hervorgehoben. Der Beitrag unterstreicht herausragende Verdienste um Pakistans digitale Jugendlandschaft und die Stellung als zertifizierter Cybersicherheitspraktiker mit nachgewiesener Expertise in Governance, Risiko und Compliance.',
+    },
+    {
+      issuer: 'DataYard — Agentic AI Meetup',
+      type: 'Teilnahmezertifikat',
+      desc: 'Ausgestellt von DataYard (Professional eLearning Partner) für die Teilnahme am Agentic AI Meetup Islamabad und den erfolgreichen Abschluss der Claude- und n8n-Masterkurse zur KI-gestützten Workflow-Automatisierung. Die gemeinsam in CoWork veranstaltete Veranstaltung konzentrierte sich auf praktische agentenbasierte KI-Anwendungen und Automatisierungs-Pipelines. Unterzeichnet vom Gründer von AI DataYard und ausgestellt am 23. Mai 2026.',
+    },
+    {
+      issuer: 'Cyber Secure Pakistan / Jang Media Group',
+      type: 'Teilnahmezertifikat',
+      desc: 'Gemeinsam verliehen von der Jang Media Group, Cyber Secure Pakistan, dem kulturellen Flügel von Jang und der Regierung Pakistans für die erfolgreiche Teilnahme an der Cyber Secure Pakistan Conference 2026. Ausgezeichnet für aktives Interesse und Engagement bei der Förderung von Cybersicherheitsbewusstsein, digitaler Innovation und technologischem Fortschritt in Pakistan. Datiert am 11. März 2026.',
+    },
+    {
+      issuer: 'Ministerium für IT & Telekommunikation — Indus AI Week',
+      type: 'Teilnahmezertifikat',
+      desc: 'Verliehen für die Teilnahme am Nationalen KI-Trainingsbootcamp im Rahmen der Indus AI Week vom 9. bis 10. Februar 2026. Die nationale Initiative wurde vom Ministerium für Informationstechnologie und Telekommunikation organisiert, um praktische Fähigkeiten in Künstlicher Intelligenz und aufkommenden digitalen Technologien zu fördern. Durchgeführt von führenden Branchenexperten in Zusammenarbeit mit Tech Nation Pakistan und PSEB.',
+    },
+    {
+      issuer: 'Stanford University — Code in Place 2026',
+      type: 'Aufnahme — Top 0,1 % weltweit',
+      desc: 'Ausgewählt für Stanford Code in Place 2026 aus über 100.000 Bewerbern weltweit und damit unter den besten 0,1 % weltweit. Dieses renommierte Programm der Leland Stanford Junior University bringt außergewöhnliche Lernende aus aller Welt zusammen, um unter der Leitung von Stanford-Dozenten grundlegende Programmierung zu studieren. Die Auswahl spiegelt herausragendes akademisches Potenzial, Motivation und Engagement für Innovation, Kreativität und Wirkung wider.',
+    },
+  ],
+  clickToView: 'Zum Ansehen klicken',
 
   contactHeading: 'In Kontakt treten',
   contactDesc: 'Offen für Cybersicherheits-Chancen, GRC-Beratung, Netzwerkarchitektur-Projekte oder Wissensaustausch. Nehmen Sie über einen der unten stehenden Kanäle Kontakt auf.',
