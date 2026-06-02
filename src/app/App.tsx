@@ -201,8 +201,10 @@ function Card({ children, className = '', delay = 0, hover = true }: {
         background: C.card,
         border: `1px solid ${C.border}`,
         transition: 'border-color 0.2s',
+        position: 'relative',
       }}
     >
+      <TechBorderOverlay />
       {children}
     </motion.div>
   );
@@ -225,11 +227,69 @@ function Tag({ children }: { children: React.ReactNode }) {
   );
 }
 
-// ─── Tech Line Border Button ─────────────────────────────────────────────────
+// ─── Tech Border Keyframes ────────────────────────────────────────────────────
 const TECH_KEYFRAMES = `
   @keyframes techBorderCW  { to { stroke-dashoffset: -1000; } }
   @keyframes techBorderCCW { to { stroke-dashoffset:  1000; } }
 `;
+
+// ─── TechBorderOverlay — drop inside any position:relative card ───────────────
+function TechBorderOverlay({ rx = 12 }: { rx?: number }) {
+  const [hovered, setHovered] = useState(false);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [dims, setDims] = useState({ w: 0, h: 0 });
+
+  useEffect(() => {
+    const parent = svgRef.current?.parentElement;
+    if (!parent) return;
+
+    const ro = new ResizeObserver(([e]) => {
+      setDims({ w: e.contentRect.width, h: e.contentRect.height });
+    });
+    ro.observe(parent);
+
+    const onEnter = () => setHovered(true);
+    const onLeave = () => setHovered(false);
+    parent.addEventListener('mouseenter', onEnter);
+    parent.addEventListener('mouseleave', onLeave);
+
+    return () => {
+      ro.disconnect();
+      parent.removeEventListener('mouseenter', onEnter);
+      parent.removeEventListener('mouseleave', onLeave);
+    };
+  }, []);
+
+  const { w, h } = dims;
+  if (w === 0) return <svg ref={svgRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none', width: 0, height: 0 }} />;
+
+  const perim = 2 * (w + h);
+  const dash = 80;
+  const gap = perim - dash;
+
+  return (
+    <svg
+      ref={svgRef}
+      style={{
+        position: 'absolute', inset: 0,
+        width: w, height: h,
+        pointerEvents: 'none', overflow: 'visible', zIndex: 10,
+        opacity: hovered ? 1 : 0, transition: 'opacity 0.3s',
+      }}
+    >
+      <rect x={1.5} y={1.5} width={w - 3} height={h - 3} rx={rx}
+        fill="none" stroke={C.accentHi} strokeWidth={1.5} strokeLinecap="square"
+        strokeDasharray={`${dash} ${gap}`}
+        style={{ animation: 'techBorderCW 4s linear infinite' }}
+      />
+      <rect x={1.5} y={1.5} width={w - 3} height={h - 3} rx={rx}
+        fill="none" stroke={C.accent} strokeWidth={1.5} strokeLinecap="square"
+        strokeDasharray={`${dash} ${gap}`} strokeDashoffset={perim / 2}
+        style={{ animation: 'techBorderCCW 4s linear infinite' }}
+      />
+    </svg>
+  );
+}
 
 function TechLineButton({
   children, onClick, primary = false,
@@ -307,7 +367,7 @@ function TechLineButton({
           strokeLinecap="square"
           strokeDasharray={`${dash} ${gap}`}
           strokeDashoffset={0}
-          style={{ animation: 'techBorderCW 2s linear infinite' }}
+          style={{ animation: 'techBorderCW 4s linear infinite' }}
         />
         {/* Arrow tick at head of line 1 */}
         <rect
@@ -320,7 +380,7 @@ function TechLineButton({
           strokeLinecap="butt"
           strokeDasharray={`4 ${perim - 4}`}
           strokeDashoffset={-dash + 4}
-          style={{ animation: 'techBorderCW 2s linear infinite' }}
+          style={{ animation: 'techBorderCW 4s linear infinite' }}
         />
 
         {/* Line 2 — counter-clockwise, softer accent */}
@@ -334,7 +394,7 @@ function TechLineButton({
           strokeLinecap="square"
           strokeDasharray={`${dash} ${gap}`}
           strokeDashoffset={perim / 2}
-          style={{ animation: 'techBorderCCW 2s linear infinite' }}
+          style={{ animation: 'techBorderCCW 4s linear infinite' }}
         />
         {/* Arrow tick at head of line 2 */}
         <rect
@@ -347,7 +407,7 @@ function TechLineButton({
           strokeLinecap="butt"
           strokeDasharray={`4 ${perim - 4}`}
           strokeDashoffset={perim / 2 + dash - 4}
-          style={{ animation: 'techBorderCCW 2s linear infinite' }}
+          style={{ animation: 'techBorderCCW 4s linear infinite' }}
         />
       </svg>
     </div>
@@ -503,7 +563,18 @@ export default function App() {
       </motion.nav>
 
       {/* ── Hero ── */}
-      <section id="home" className="min-h-screen flex items-center justify-center relative" style={{ zIndex: 1 }}>
+      <section id="home" className="min-h-screen flex items-center justify-center relative" style={{ zIndex: 1, overflow: 'hidden' }}>
+        {/* Hero video background */}
+        <video
+          autoPlay muted loop playsInline
+          style={{
+            position: 'absolute', inset: 0,
+            width: '100%', height: '100%',
+            objectFit: 'cover', opacity: 0.18, zIndex: 0,
+          }}
+        >
+          <source src="https://res.cloudinary.com/da76ww9ps/video/upload/v1780159913/hero-bg-ikK1LdWz_cghkxm.mp4" type="video/mp4" />
+        </video>
         <div className="text-center px-6 relative z-10">
           <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9 }}>
             <div className="mb-3 text-xs tracking-widest uppercase" style={{ color: C.accent, fontFamily: 'Oswald, sans-serif' }}>
@@ -675,8 +746,9 @@ export default function App() {
                 transition={{ delay: i * 0.08 }}
                 whileHover={{ y: -4 }}
                 className="rounded-xl overflow-hidden flex flex-col"
-                style={{ background: C.card, border: `1px solid ${C.border}` }}
+                style={{ background: C.card, border: `1px solid ${C.border}`, position: 'relative' }}
               >
+                <TechBorderOverlay rx={12} />
                 <div
                   onClick={() => setLightboxImg(a.img)}
                   style={{ height: 200, overflow: 'hidden', flexShrink: 0, position: 'relative', cursor: 'pointer' }}
@@ -728,8 +800,10 @@ export default function App() {
                   background: C.card,
                   border: `1px solid ${expandedCert === issuer ? C.accent : C.border}`,
                   transition: 'border-color 0.2s',
+                  position: 'relative',
                 }}
               >
+                <TechBorderOverlay rx={12} />
                 <div className="p-5">
                   <div className="flex items-center gap-3 mb-3">
                     <ImgPlaceholder width={36} height={36} label="" />
@@ -791,8 +865,9 @@ export default function App() {
                 transition={{ duration: 0.5, delay: i * 0.08 }}
                 whileHover={{ y: -4, borderColor: C.accentHi }}
                 className="rounded-xl overflow-hidden"
-                style={{ background: C.card, border: `1px solid ${C.border}`, transition: 'border-color 0.2s' }}
+                style={{ background: C.card, border: `1px solid ${C.border}`, transition: 'border-color 0.2s', position: 'relative' }}
               >
+                <TechBorderOverlay rx={12} />
                 <div
                   onClick={() => setLightboxImg(PROJ_IMGS[i])}
                   style={{ height: 150, overflow: 'hidden', position: 'relative', cursor: 'pointer' }}
@@ -858,8 +933,9 @@ export default function App() {
                 />
                 <div
                   className="rounded-xl p-6"
-                  style={{ background: C.card, border: `1px solid ${C.border}` }}
+                  style={{ background: C.card, border: `1px solid ${C.border}`, position: 'relative' }}
                 >
+                  <TechBorderOverlay rx={12} />
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-1">
                     <h3 style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, fontSize: '1.05rem', color: C.text }}>
                       {exp.role}
@@ -895,8 +971,9 @@ export default function App() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08 }}
                 className="rounded-xl p-6"
-                style={{ background: C.card, border: `1px solid ${C.border}` }}
+                style={{ background: C.card, border: `1px solid ${C.border}`, position: 'relative' }}
               >
+                <TechBorderOverlay rx={12} />
                 <h3 className="mb-4 uppercase tracking-wider text-sm" style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, color: C.accent }}>
                   {cat}
                 </h3>
@@ -914,8 +991,9 @@ export default function App() {
             viewport={{ once: true }}
             transition={{ delay: 0.3 }}
             className="mt-8 rounded-xl p-6"
-            style={{ background: C.card, border: `1px solid ${C.border}` }}
+            style={{ background: C.card, border: `1px solid ${C.border}`, position: 'relative' }}
           >
+            <TechBorderOverlay rx={12} />
             <h3 className="mb-4 uppercase tracking-wider text-sm" style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, color: C.accent }}>
               {t.coreCompHeading}
             </h3>
@@ -942,7 +1020,7 @@ export default function App() {
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            opacity: 0.22,
+            opacity: 0.42,
             zIndex: 0,
           }}
         >
@@ -986,10 +1064,12 @@ export default function App() {
                   color: C.muted,
                   transition: 'border-color 0.2s',
                   minWidth: '90px',
+                  position: 'relative',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.borderColor = C.accent)}
                 onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}
               >
+                <TechBorderOverlay rx={12} />
                 <s.icon size={22} style={{ color: C.accent }} />
                 {s.label}
               </motion.a>
