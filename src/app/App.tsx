@@ -412,9 +412,128 @@ function TechLineButton({
   );
 }
 
+// ─── CertCategory — Scanline Reveal Accordion ────────────────────────────────
+function CertCategory({ issuer, certs, index }: { issuer: string; certs: string[]; index: number }) {
+  const [open, setOpen] = useState(false);
+  const [scanning, setScanning] = useState(false);
+
+  const toggle = () => {
+    if (!open) {
+      setOpen(true);
+      setScanning(true);
+      setTimeout(() => setScanning(false), 950);
+    } else {
+      setOpen(false);
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.05 }}
+      style={{
+        background: C.card,
+        border: `1px solid ${open ? C.accent : C.border}`,
+        borderRadius: 12,
+        overflow: 'hidden',
+        transition: 'border-color 0.25s',
+      }}
+    >
+      {/* ── Header ── */}
+      <button
+        onClick={toggle}
+        style={{
+          width: '100%', display: 'flex', alignItems: 'center', gap: 14,
+          padding: '16px 22px', background: 'transparent', border: 'none',
+          cursor: 'pointer', textAlign: 'left',
+        }}
+      >
+        <span style={{
+          fontFamily: 'monospace', fontSize: '0.68rem', color: C.accentHi,
+          background: `${C.accent}22`, padding: '3px 9px', borderRadius: 4,
+          flexShrink: 0, letterSpacing: '0.04em',
+        }}>
+          /{issuer.toLowerCase().replace(/\s+/g, '-')}/
+        </span>
+        <span style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, color: C.text, fontSize: '1rem', flex: 1 }}>
+          {issuer}
+        </span>
+        <span style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: C.faint, flexShrink: 0 }}>
+          {certs.length} {certs.length === 1 ? 'cert' : 'certs'}
+        </span>
+        <motion.span
+          animate={{ rotate: open ? 180 : 0 }}
+          transition={{ duration: 0.25 }}
+          style={{ color: C.accent, display: 'flex', flexShrink: 0 }}
+        >
+          <ChevronDown size={16} />
+        </motion.span>
+      </button>
+
+      {/* ── Expandable body ── */}
+      <motion.div
+        initial={false}
+        animate={{ height: open ? 'auto' : 0 }}
+        transition={{ duration: 0.38, ease: [0.4, 0, 0.2, 1] }}
+        style={{ overflow: 'hidden', position: 'relative' }}
+      >
+        {/* Scanline sweep */}
+        {scanning && (
+          <motion.div
+            initial={{ top: 0, opacity: 1 }}
+            animate={{ top: '100%', opacity: 0.2 }}
+            transition={{ duration: 0.75, ease: 'linear' }}
+            style={{
+              position: 'absolute', left: 0, right: 0, height: 2, zIndex: 20,
+              background: `linear-gradient(to right, transparent 0%, ${C.accentHi} 30%, ${C.accentHi} 70%, transparent 100%)`,
+              boxShadow: `0 0 18px 4px ${C.accentHi}99`,
+              pointerEvents: 'none',
+            }}
+          />
+        )}
+
+        <div style={{ borderTop: `1px solid ${C.border}` }}>
+          {certs.map((cert, ci) => (
+            <motion.div
+              key={ci}
+              initial={{ opacity: 0, x: -18 }}
+              animate={open ? { opacity: 1, x: 0 } : { opacity: 0, x: -18 }}
+              transition={{ delay: open ? ci * 0.058 : 0, duration: 0.28, ease: 'easeOut' }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 13,
+                padding: '11px 22px',
+                borderBottom: ci < certs.length - 1 ? `1px solid ${C.border}55` : 'none',
+              }}
+            >
+              <span style={{
+                fontFamily: 'monospace', fontSize: '0.62rem', color: `${C.faint}99`,
+                width: '1.8ch', textAlign: 'right', flexShrink: 0,
+              }}>
+                {String(ci + 1).padStart(2, '0')}
+              </span>
+              <span style={{ width: 2, height: 14, background: `${C.accent}99`, borderRadius: 2, flexShrink: 0 }} />
+              <span style={{ flex: 1, fontSize: '0.84rem', color: C.muted }}>
+                {cert}
+              </span>
+              <span style={{
+                fontFamily: 'monospace', fontSize: '0.6rem', color: C.accentHi,
+                background: `${C.accent}18`, padding: '2px 8px', borderRadius: 4,
+                letterSpacing: '0.05em', flexShrink: 0, border: `1px solid ${C.accent}33`,
+              }}>
+                VERIFIED
+              </span>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 // ─── Main App ───────────────────────────────────────────────────────────────
 export default function App() {
-  const [expandedCert, setExpandedCert] = useState<string | null>(null);
   const [lang, setLang] = useState<Lang>('en');
   const [lightboxImg, setLightboxImg] = useState<string | null>(null);
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
@@ -782,57 +901,19 @@ export default function App() {
 
       {/* ── Certifications ── */}
       <section id="certifications" className="py-28 px-6 relative" style={{ background: C.bg2, zIndex: 1 }}>
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <SectionHeading>{t.certHeading}</SectionHeading>
-          <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {/* Terminal hint */}
+          <motion.p
+            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+            className="mb-8 text-center"
+            style={{ fontFamily: 'monospace', fontSize: '0.72rem', color: C.faint, letterSpacing: '0.06em' }}
+          >
+            {'// click any issuer to scan credentials'}
+          </motion.p>
+          <div className="flex flex-col gap-3">
             {Object.entries(certifications).map(([issuer, certs], i) => (
-              <motion.div
-                key={issuer}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.04 }}
-                onMouseEnter={() => setExpandedCert(issuer)}
-                onMouseLeave={() => setExpandedCert(null)}
-                className="rounded-xl cursor-pointer"
-                style={{
-                  background: C.card,
-                  border: `1px solid ${expandedCert === issuer ? C.accent : C.border}`,
-                  transition: 'border-color 0.2s',
-                  position: 'relative',
-                }}
-              >
-                <TechBorderOverlay rx={12} />
-                <div className="p-5">
-                  <div className="flex items-center gap-3 mb-3">
-                    <span style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, color: C.text, fontSize: '0.95rem', flex: 1 }}>
-                      {issuer}
-                    </span>
-                    <span
-                      className="text-xs px-2 py-0.5 rounded-full flex-shrink-0"
-                      style={{ background: `${C.accent}33`, color: C.accentHi }}
-                    >
-                      {certs.length}
-                    </span>
-                  </div>
-
-                  <motion.div
-                    initial={false}
-                    animate={{ height: expandedCert === issuer ? 'auto' : 0, opacity: expandedCert === issuer ? 1 : 0 }}
-                    transition={{ duration: 0.25 }}
-                    style={{ overflow: 'hidden' }}
-                  >
-                    <ul className="mt-3 space-y-1.5">
-                      {certs.map((c, ci) => (
-                        <li key={ci} className="flex gap-2 text-xs leading-snug" style={{ color: C.muted }}>
-                          <span style={{ color: C.accent, marginTop: '3px', flexShrink: 0 }}>›</span>
-                          {c}
-                        </li>
-                      ))}
-                    </ul>
-                  </motion.div>
-                </div>
-              </motion.div>
+              <CertCategory key={issuer} issuer={issuer} certs={certs} index={i} />
             ))}
           </div>
         </div>
