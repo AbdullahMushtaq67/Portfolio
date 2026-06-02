@@ -298,13 +298,15 @@ function TechLineButton({
 }) {
   const [hovered, setHovered] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
-  const [dims, setDims] = useState({ w: 160, h: 50 });
+  const [dims, setDims] = useState({ w: 0, h: 0 });
 
-  useLayoutEffect(() => {
-    if (btnRef.current) {
-      const r = btnRef.current.getBoundingClientRect();
-      setDims({ w: r.width, h: r.height });
-    }
+  useEffect(() => {
+    if (!btnRef.current) return;
+    const ro = new ResizeObserver(([e]) => {
+      setDims({ w: e.contentRect.width, h: e.contentRect.height });
+    });
+    ro.observe(btnRef.current);
+    return () => ro.disconnect();
   }, []);
 
   const pad = 5;
@@ -485,49 +487,82 @@ function CertImageCard({ cert, delay, onClick }: { cert: CertEntry; delay: numbe
   );
 }
 
-// ─── CertGroup — issuer heading + image card grid ─────────────────────────────
+// ─── CertGroup — issuer heading + image cards (or text rows) ─────────────────
 function CertGroup({ issuer, certs, groupIndex, onViewImage }: {
   issuer: string;
   certs: CertEntry[];
   groupIndex: number;
   onViewImage: (src: string) => void;
 }) {
-  const visible = certs.filter(c => c.image);
-  if (visible.length === 0) return null;
+  const withImage = certs.filter(c => c.image);
+  const textOnly  = certs.filter(c => !c.image);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ delay: groupIndex * 0.08 }}
-      style={{ marginBottom: '3rem' }}
+      transition={{ delay: groupIndex * 0.06 }}
+      style={{ marginBottom: '2.8rem' }}
     >
-      {/* Issuer header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: '1.25rem' }}>
-        <h3 style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 700, fontSize: '1.05rem', color: C.accent, margin: 0, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+      {/* ── Issuer header ── */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: '1.1rem' }}>
+        <h3 style={{
+          fontFamily: 'Oswald, sans-serif', fontWeight: 700, fontSize: '1rem',
+          color: C.accent, margin: 0, letterSpacing: '0.08em', textTransform: 'uppercase',
+        }}>
           {issuer}
         </h3>
         <span style={{
-          fontSize: '0.68rem', color: C.accentHi, background: `${C.accent}22`,
+          fontSize: '0.65rem', color: C.accentHi, background: `${C.accent}22`,
           padding: '2px 8px', borderRadius: 20, fontWeight: 600,
         }}>
-          {visible.length}
+          {certs.length}
         </span>
-        <div style={{ flex: 1, height: 1, background: `${C.border}88` }} />
+        <div style={{ flex: 1, height: 1, background: `${C.border}77` }} />
       </div>
 
-      {/* Card grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1.25rem' }}>
-        {visible.map((cert, ci) => (
-          <CertImageCard
-            key={ci}
-            cert={cert}
-            delay={ci * 0.08}
-            onClick={() => onViewImage(cert.image!)}
-          />
-        ))}
-      </div>
+      {/* ── Image cards (certs that have images) ── */}
+      {withImage.length > 0 && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem', marginBottom: textOnly.length > 0 ? '1rem' : 0 }}>
+          {withImage.map((cert, ci) => (
+            <CertImageCard key={ci} cert={cert} delay={ci * 0.07} onClick={() => onViewImage(cert.image!)} />
+          ))}
+        </div>
+      )}
+
+      {/* ── Text rows (certs without images yet) ── */}
+      {textOnly.length > 0 && (
+        <div style={{
+          background: C.card, borderRadius: 10, border: `1px solid ${C.border}`,
+          overflow: 'hidden',
+        }}>
+          {textOnly.map((cert, ci) => (
+            <motion.div
+              key={ci}
+              initial={{ opacity: 0, x: -12 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: ci * 0.04 }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 12,
+                padding: '9px 18px',
+                borderBottom: ci < textOnly.length - 1 ? `1px solid ${C.border}55` : 'none',
+              }}
+            >
+              <span style={{ width: 2, height: 12, background: `${C.accent}88`, borderRadius: 2, flexShrink: 0 }} />
+              <span style={{ flex: 1, fontSize: '0.83rem', color: C.muted, lineHeight: 1.3 }}>
+                {cert.name}
+              </span>
+              {cert.year && (
+                <span style={{ fontFamily: 'monospace', fontSize: '0.6rem', color: `${C.faint}99`, flexShrink: 0 }}>
+                  {cert.year}
+                </span>
+              )}
+            </motion.div>
+          ))}
+        </div>
+      )}
     </motion.div>
   );
 }
