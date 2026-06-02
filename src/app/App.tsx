@@ -805,7 +805,6 @@ export default function App() {
                 <TechBorderOverlay rx={12} />
                 <div className="p-5">
                   <div className="flex items-center gap-3 mb-3">
-                    <ImgPlaceholder width={36} height={36} label="" />
                     <span style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, color: C.text, fontSize: '0.95rem', flex: 1 }}>
                       {issuer}
                     </span>
@@ -1060,12 +1059,10 @@ export default function App() {
                   color: C.muted,
                   transition: 'border-color 0.2s',
                   minWidth: '90px',
-                  position: 'relative',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.borderColor = C.accent)}
                 onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}
               >
-                <TechBorderOverlay rx={12} />
                 <s.icon size={22} style={{ color: C.accent }} />
                 {s.label}
               </motion.a>
