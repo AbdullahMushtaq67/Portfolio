@@ -413,7 +413,14 @@ function TechLineButton({
 }
 
 // ─── CertCategory — Scanline Reveal Accordion ────────────────────────────────
-function CertCategory({ issuer, certs, index }: { issuer: string; certs: string[]; index: number }) {
+type CertEntry = { name: string; year?: string; verify?: string; image?: string };
+
+function CertCategory({ issuer, certs, index, onViewImage }: {
+  issuer: string;
+  certs: CertEntry[];
+  index: number;
+  onViewImage: (src: string) => void;
+}) {
   const [open, setOpen] = useState(false);
   const [scanning, setScanning] = useState(false);
 
@@ -503,27 +510,59 @@ function CertCategory({ issuer, certs, index }: { issuer: string; certs: string[
               transition={{ delay: open ? ci * 0.058 : 0, duration: 0.28, ease: 'easeOut' }}
               style={{
                 display: 'flex', alignItems: 'center', gap: 13,
-                padding: '11px 22px',
+                padding: '10px 22px',
                 borderBottom: ci < certs.length - 1 ? `1px solid ${C.border}55` : 'none',
+                cursor: cert.image ? 'pointer' : 'default',
               }}
+              onClick={() => cert.image && onViewImage(cert.image)}
             >
+              {/* Index */}
               <span style={{
-                fontFamily: 'monospace', fontSize: '0.62rem', color: `${C.faint}99`,
+                fontFamily: 'monospace', fontSize: '0.62rem', color: `${C.faint}88`,
                 width: '1.8ch', textAlign: 'right', flexShrink: 0,
               }}>
                 {String(ci + 1).padStart(2, '0')}
               </span>
+              {/* Accent bar */}
               <span style={{ width: 2, height: 14, background: `${C.accent}99`, borderRadius: 2, flexShrink: 0 }} />
-              <span style={{ flex: 1, fontSize: '0.84rem', color: C.muted }}>
-                {cert}
+              {/* Cert name */}
+              <span style={{ flex: 1, fontSize: '0.84rem', color: C.muted, lineHeight: 1.3 }}>
+                {cert.name}
               </span>
-              <span style={{
-                fontFamily: 'monospace', fontSize: '0.6rem', color: C.accentHi,
-                background: `${C.accent}18`, padding: '2px 8px', borderRadius: 4,
-                letterSpacing: '0.05em', flexShrink: 0, border: `1px solid ${C.accent}33`,
-              }}>
-                VERIFIED
-              </span>
+              {/* Year */}
+              {cert.year && (
+                <span style={{ fontFamily: 'monospace', fontSize: '0.62rem', color: `${C.faint}88`, flexShrink: 0 }}>
+                  {cert.year}
+                </span>
+              )}
+              {/* Verify link */}
+              {cert.verify && (
+                <a
+                  href={cert.verify}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={e => e.stopPropagation()}
+                  style={{
+                    fontFamily: 'monospace', fontSize: '0.58rem', color: C.accentHi,
+                    background: `${C.accent}18`, padding: '2px 7px', borderRadius: 4,
+                    letterSpacing: '0.05em', flexShrink: 0, border: `1px solid ${C.accent}33`,
+                    textDecoration: 'none', whiteSpace: 'nowrap',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = `${C.accent}35`)}
+                  onMouseLeave={e => (e.currentTarget.style.background = `${C.accent}18`)}
+                >
+                  VERIFY ↗
+                </a>
+              )}
+              {/* Image hint */}
+              {cert.image && (
+                <span style={{
+                  fontFamily: 'monospace', fontSize: '0.58rem', color: `${C.accentHi}88`,
+                  flexShrink: 0, letterSpacing: '0.04em',
+                }}>
+                  VIEW
+                </span>
+              )}
             </motion.div>
           ))}
         </div>
@@ -550,74 +589,74 @@ export default function App() {
 
   const NAV = ['home', 'about', 'education', 'achievements', 'certifications', 'projects', 'experience', 'skills', 'contact'];
 
-  const certifications: Record<string, string[]> = {
+  const certifications: Record<string, CertEntry[]> = {
     IBM: [
-      'IT Support Professional Certificate',
-      'Cybersecurity Analyst Professional Certificate',
-      'Business Intelligence Analyst',
-      'Certified Data Analyst',
-      'IT Project Manager',
-      'System Analyst',
-      'AI Product Manager',
-      'AI Developer',
-      'Data Management',
-      'Project Manager',
+      { name: 'Cybersecurity IT Fundamentals Specialization',  year: '2025', verify: 'https://www.credly.com/badges/0c572a23-5a62-4c0f-880c-c62b8904cf61', image: '/certs/ibm-cyber-fundamentals.png' },
+      { name: 'IBM AI Product Manager',                        year: '2025', verify: 'https://coursera.org/verify/professional-cert/FNJGYEJG4LZ5' },
+      { name: 'IBM Business Intelligence (BI) Analyst',        year: '2024', verify: 'https://coursera.org/verify/professional-cert/PVQEKBFXPK9E', image: '/certs/ibm-bi-analyst.jpg' },
+      { name: 'IBM Cybersecurity Analyst',                     year: '2025', verify: 'https://coursera.org/verify/professional-cert/HO1CYE5BQASP' },
+      { name: 'IBM Data Analyst',                              year: '2024', verify: 'https://coursera.org/verify/professional-cert/7ZGAD8X8CI28', image: '/certs/ibm-data-analyst.jpg' },
+      { name: 'IBM IT Project Manager',                        year: '2025', verify: 'https://coursera.org/verify/professional-cert/LGI1T1AEDYX0' },
+      { name: 'IBM IT Support',                                year: '2025', verify: 'https://coursera.org/verify/professional-cert/XF5RZZ1FJU19' },
+      { name: 'IBM Project Manager',                           year: '2025', verify: 'https://coursera.org/verify/professional-cert/C6BAGBISN5XV' },
+      { name: 'IBM Systems Analyst',                           year: '2025', verify: 'https://coursera.org/verify/professional-cert/D6NPZG1BGWFX' },
+      { name: 'IT Fundamentals for Cybersecurity',             year: '2025', verify: 'https://coursera.org/verify/specialization/UFQIGO8Q3ZFL' },
     ],
     Microsoft: [
-      'IT Support Specialist',
-      'Cybersecurity Analyst',
-      'Program Management',
-      'AI Product Manager',
+      { name: 'AI Product Manager' },
+      { name: 'Cybersecurity Analyst' },
+      { name: 'IT Support Specialist' },
+      { name: 'Program Management' },
     ],
     Google: [
-      'AI Professional Certification',
-      'Cloud Network Engineer',
-      'Networking in Google Cloud',
-      'IT Support Professional Certificate',
-      'Project Management Professional Certificate',
-      'Digital Marketing Certification',
-      'Cloud Certification Engineer Preparation',
-      'Cybersecurity V2',
+      { name: 'AI Professional Certification' },
+      { name: 'Cloud Certification Engineer Preparation' },
+      { name: 'Cloud Network Engineer' },
+      { name: 'Cybersecurity V2' },
+      { name: 'Digital Marketing Certification' },
+      { name: 'IT Support Professional Certificate' },
+      { name: 'Networking in Google Cloud' },
+      { name: 'Project Management Professional Certificate' },
     ],
     Cisco: [
-      'Introduction to Cybersecurity',
-      'Ethical Hacking',
+      { name: 'Ethical Hacking' },
+      { name: 'Introduction to Cybersecurity' },
     ],
     Oracle: [
-      'OCI 2025 Certified Foundations Associate',
-      'OCI 2025 Certified AI Foundations Associate',
-      'Oracle Certified Foundations Associate',
-      'AI Vector Search Certified Professional',
-      'OCI Certified Generative AI Professional',
+      { name: 'AI Vector Search Certified Professional' },
+      { name: 'OCI 2025 Certified AI Foundations Associate' },
+      { name: 'OCI 2025 Certified Foundations Associate' },
+      { name: 'OCI Certified Generative AI Professional' },
+      { name: 'Oracle Certified Foundations Associate' },
     ],
     'HP Life': [
-      'Cybersecurity Awareness',
-      'Certified Ethical Hacking Awareness',
-      'Project Management Specialization',
+      { name: 'Certified Ethical Hacking Awareness' },
+      { name: 'Cybersecurity Awareness' },
+      { name: 'Project Management Specialization' },
     ],
-    OPSWAT: ['Critical Infrastructure Protection'],
+    OPSWAT: [{ name: 'Critical Infrastructure Protection' }],
     Rutgers: [
-      'Advanced Global Procurement & Sourcing Specialization',
-      'Global Procurement & Sourcing Specialization',
-      'Supply Chain Management Specialization',
+      { name: 'Advanced Global Procurement & Sourcing Specialization' },
+      { name: 'Global Procurement & Sourcing Specialization' },
+      { name: 'Supply Chain Management Specialization' },
     ],
     'EU Cyber Academy': [
-      'CSCSO – Certified SME Cyber Security Officer',
-      'CRPO – Certified Ransomware Protection Officer',
+      { name: 'CRPO – Certified Ransomware Protection Officer' },
+      { name: 'CSCSO – Certified SME Cyber Security Officer' },
     ],
-    'ISC2': ['Cybersecurity Specialist (CC)'],
-    'EC-Council': ['Cybersecurity for Businesses'],
-    NEBOSH: ['International General Certificate in Occupational Health and Safety'],
-    LEORON: ['ACGRC – Advanced Certificate in Governance, Risk and Compliance'],
-    'ISO/IEC': ['ISO/IEC 27001:2022 Lead Auditor'],
-    'Govt. of Punjab': ['Certified Ethical Hacker'],
+    'ISC2': [{ name: 'Cybersecurity Specialist (CC)' }],
+    'EC-Council': [{ name: 'Cybersecurity for Businesses' }],
+    NEBOSH: [{ name: 'International General Certificate in Occupational Health and Safety' }],
+    LEORON: [{ name: 'ACGRC – Advanced Certificate in Governance, Risk and Compliance' }],
+    'ISO/IEC': [{ name: 'ISO/IEC 27001:2022 Lead Auditor' }],
+    'Govt. of Punjab': [{ name: 'Certified Ethical Hacker' }],
     Other: [
-      'ADP – Payroll Specialist',
-      'Unilever – Supply Chain Data Analyst',
-      'Univ. of Minnesota – Human Resource Management',
-      'HRCI – Human Resource Associate',
-      'Univ. of Maryland – Cybersecurity in the AI Era',
-      'Alison – Diploma in Human Resources Management',
+      { name: 'ADP – Payroll Specialist' },
+      { name: 'Alison – Diploma in Human Resources Management' },
+      { name: 'HRCI – Human Resource Associate' },
+      { name: 'Unilever – Supply Chain Data Analyst' },
+      { name: 'Univ. of Maryland – Cybersecurity in the AI Era' },
+      { name: 'Univ. of Minnesota – Human Resource Management' },
     ],
   };
 
@@ -913,7 +952,7 @@ export default function App() {
           </motion.p>
           <div className="flex flex-col gap-3">
             {Object.entries(certifications).map(([issuer, certs], i) => (
-              <CertCategory key={issuer} issuer={issuer} certs={certs} index={i} />
+              <CertCategory key={issuer} issuer={issuer} certs={certs} index={i} onViewImage={setLightboxImg} />
             ))}
           </div>
         </div>
