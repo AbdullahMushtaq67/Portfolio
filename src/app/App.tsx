@@ -412,161 +412,122 @@ function TechLineButton({
   );
 }
 
-// ─── CertCategory — Scanline Reveal Accordion ────────────────────────────────
+// ─── Cert types ──────────────────────────────────────────────────────────────
 type CertEntry = { name: string; year?: string; verify?: string; image?: string };
 
-function CertCategory({ issuer, certs, index, onViewImage }: {
+// ─── CertImageCard ────────────────────────────────────────────────────────────
+function CertImageCard({ cert, delay, onClick }: { cert: CertEntry; delay: number; onClick: () => void }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay, duration: 0.4 }}
+      style={{ cursor: 'pointer' }}
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {/* Image frame */}
+      <div style={{
+        position: 'relative', overflow: 'hidden', borderRadius: 10,
+        border: `1px solid ${hovered ? C.accent : C.border}`,
+        transition: 'border-color 0.2s, box-shadow 0.2s',
+        boxShadow: hovered ? `0 4px 24px ${C.accent}44` : '0 2px 8px rgba(0,0,0,0.25)',
+        background: '#f0f0f0',
+        aspectRatio: '4/3',
+      }}>
+        <img
+          src={cert.image}
+          alt={cert.name}
+          style={{
+            width: '100%', height: '100%', objectFit: 'cover', display: 'block',
+            transform: hovered ? 'scale(1.04)' : 'scale(1)',
+            transition: 'transform 0.35s ease',
+          }}
+        />
+        {/* Hover overlay */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: hovered ? 'rgba(62,124,177,0.18)' : 'transparent',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transition: 'background 0.2s',
+        }}>
+          {hovered && (
+            <motion.span
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={{ opacity: 1, scale: 1 }}
+              style={{
+                background: 'rgba(10,20,40,0.82)', color: C.accentHi,
+                fontFamily: 'Oswald, sans-serif', fontSize: '0.7rem',
+                letterSpacing: '0.12em', textTransform: 'uppercase',
+                padding: '7px 16px', borderRadius: 6,
+                border: `1px solid ${C.accent}66`,
+              }}
+            >
+              Click to View
+            </motion.span>
+          )}
+        </div>
+      </div>
+
+      {/* Name + year */}
+      <div style={{ marginTop: 10, paddingBottom: 2 }}>
+        <p style={{ fontSize: '0.82rem', color: C.text, fontWeight: 500, lineHeight: 1.35, margin: 0 }}>
+          {cert.name}
+        </p>
+        {cert.year && (
+          <p style={{ fontSize: '0.68rem', color: C.faint, marginTop: 3, margin: 0 }}>{cert.year}</p>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── CertGroup — issuer heading + image card grid ─────────────────────────────
+function CertGroup({ issuer, certs, groupIndex, onViewImage }: {
   issuer: string;
   certs: CertEntry[];
-  index: number;
+  groupIndex: number;
   onViewImage: (src: string) => void;
 }) {
-  const [open, setOpen] = useState(false);
-  const [scanning, setScanning] = useState(false);
-
-  const toggle = () => {
-    if (!open) {
-      setOpen(true);
-      setScanning(true);
-      setTimeout(() => setScanning(false), 950);
-    } else {
-      setOpen(false);
-    }
-  };
+  const visible = certs.filter(c => c.image);
+  if (visible.length === 0) return null;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ delay: index * 0.05 }}
-      style={{
-        background: C.card,
-        border: `1px solid ${open ? C.accent : C.border}`,
-        borderRadius: 12,
-        overflow: 'hidden',
-        transition: 'border-color 0.25s',
-      }}
+      transition={{ delay: groupIndex * 0.08 }}
+      style={{ marginBottom: '3rem' }}
     >
-      {/* ── Header ── */}
-      <button
-        onClick={toggle}
-        style={{
-          width: '100%', display: 'flex', alignItems: 'center', gap: 14,
-          padding: '16px 22px', background: 'transparent', border: 'none',
-          cursor: 'pointer', textAlign: 'left',
-        }}
-      >
-        <span style={{
-          fontFamily: 'monospace', fontSize: '0.68rem', color: C.accentHi,
-          background: `${C.accent}22`, padding: '3px 9px', borderRadius: 4,
-          flexShrink: 0, letterSpacing: '0.04em',
-        }}>
-          /{issuer.toLowerCase().replace(/\s+/g, '-')}/
-        </span>
-        <span style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, color: C.text, fontSize: '1rem', flex: 1 }}>
+      {/* Issuer header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: '1.25rem' }}>
+        <h3 style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 700, fontSize: '1.05rem', color: C.accent, margin: 0, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
           {issuer}
+        </h3>
+        <span style={{
+          fontSize: '0.68rem', color: C.accentHi, background: `${C.accent}22`,
+          padding: '2px 8px', borderRadius: 20, fontWeight: 600,
+        }}>
+          {visible.length}
         </span>
-        <span style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: C.faint, flexShrink: 0 }}>
-          {certs.length} {certs.length === 1 ? 'cert' : 'certs'}
-        </span>
-        <motion.span
-          animate={{ rotate: open ? 180 : 0 }}
-          transition={{ duration: 0.25 }}
-          style={{ color: C.accent, display: 'flex', flexShrink: 0 }}
-        >
-          <ChevronDown size={16} />
-        </motion.span>
-      </button>
+        <div style={{ flex: 1, height: 1, background: `${C.border}88` }} />
+      </div>
 
-      {/* ── Expandable body ── */}
-      <motion.div
-        initial={false}
-        animate={{ height: open ? 'auto' : 0 }}
-        transition={{ duration: 0.38, ease: [0.4, 0, 0.2, 1] }}
-        style={{ overflow: 'hidden', position: 'relative' }}
-      >
-        {/* Scanline sweep */}
-        {scanning && (
-          <motion.div
-            initial={{ top: 0, opacity: 1 }}
-            animate={{ top: '100%', opacity: 0.2 }}
-            transition={{ duration: 0.75, ease: 'linear' }}
-            style={{
-              position: 'absolute', left: 0, right: 0, height: 2, zIndex: 20,
-              background: `linear-gradient(to right, transparent 0%, ${C.accentHi} 30%, ${C.accentHi} 70%, transparent 100%)`,
-              boxShadow: `0 0 18px 4px ${C.accentHi}99`,
-              pointerEvents: 'none',
-            }}
+      {/* Card grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1.25rem' }}>
+        {visible.map((cert, ci) => (
+          <CertImageCard
+            key={ci}
+            cert={cert}
+            delay={ci * 0.08}
+            onClick={() => onViewImage(cert.image!)}
           />
-        )}
-
-        <div style={{ borderTop: `1px solid ${C.border}` }}>
-          {certs.map((cert, ci) => (
-            <motion.div
-              key={ci}
-              initial={{ opacity: 0, x: -18 }}
-              animate={open ? { opacity: 1, x: 0 } : { opacity: 0, x: -18 }}
-              transition={{ delay: open ? ci * 0.058 : 0, duration: 0.28, ease: 'easeOut' }}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 13,
-                padding: '10px 22px',
-                borderBottom: ci < certs.length - 1 ? `1px solid ${C.border}55` : 'none',
-                cursor: cert.image ? 'pointer' : 'default',
-              }}
-              onClick={() => cert.image && onViewImage(cert.image)}
-            >
-              {/* Index */}
-              <span style={{
-                fontFamily: 'monospace', fontSize: '0.62rem', color: `${C.faint}88`,
-                width: '1.8ch', textAlign: 'right', flexShrink: 0,
-              }}>
-                {String(ci + 1).padStart(2, '0')}
-              </span>
-              {/* Accent bar */}
-              <span style={{ width: 2, height: 14, background: `${C.accent}99`, borderRadius: 2, flexShrink: 0 }} />
-              {/* Cert name */}
-              <span style={{ flex: 1, fontSize: '0.84rem', color: C.muted, lineHeight: 1.3 }}>
-                {cert.name}
-              </span>
-              {/* Year */}
-              {cert.year && (
-                <span style={{ fontFamily: 'monospace', fontSize: '0.62rem', color: `${C.faint}88`, flexShrink: 0 }}>
-                  {cert.year}
-                </span>
-              )}
-              {/* Verify link */}
-              {cert.verify && (
-                <a
-                  href={cert.verify}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={e => e.stopPropagation()}
-                  style={{
-                    fontFamily: 'monospace', fontSize: '0.58rem', color: C.accentHi,
-                    background: `${C.accent}18`, padding: '2px 7px', borderRadius: 4,
-                    letterSpacing: '0.05em', flexShrink: 0, border: `1px solid ${C.accent}33`,
-                    textDecoration: 'none', whiteSpace: 'nowrap',
-                  }}
-                  onMouseEnter={e => (e.currentTarget.style.background = `${C.accent}35`)}
-                  onMouseLeave={e => (e.currentTarget.style.background = `${C.accent}18`)}
-                >
-                  VERIFY ↗
-                </a>
-              )}
-              {/* Image hint */}
-              {cert.image && (
-                <span style={{
-                  fontFamily: 'monospace', fontSize: '0.58rem', color: `${C.accentHi}88`,
-                  flexShrink: 0, letterSpacing: '0.04em',
-                }}>
-                  VIEW
-                </span>
-              )}
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
+        ))}
+      </div>
     </motion.div>
   );
 }
@@ -940,21 +901,11 @@ export default function App() {
 
       {/* ── Certifications ── */}
       <section id="certifications" className="py-28 px-6 relative" style={{ background: C.bg2, zIndex: 1 }}>
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <SectionHeading>{t.certHeading}</SectionHeading>
-          {/* Terminal hint */}
-          <motion.p
-            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-            className="mb-8 text-center"
-            style={{ fontFamily: 'monospace', fontSize: '0.72rem', color: C.faint, letterSpacing: '0.06em' }}
-          >
-            {'// click any issuer to scan credentials'}
-          </motion.p>
-          <div className="flex flex-col gap-3">
-            {Object.entries(certifications).map(([issuer, certs], i) => (
-              <CertCategory key={issuer} issuer={issuer} certs={certs} index={i} onViewImage={setLightboxImg} />
-            ))}
-          </div>
+          {Object.entries(certifications).map(([issuer, certs], i) => (
+            <CertGroup key={issuer} issuer={issuer} certs={certs} groupIndex={i} onViewImage={setLightboxImg} />
+          ))}
         </div>
       </section>
 
