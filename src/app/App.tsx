@@ -298,15 +298,17 @@ function TechLineButton({
 }) {
   const [hovered, setHovered] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
-  const [dims, setDims] = useState({ w: 0, h: 0 });
+  const [dims, setDims] = useState({ w: 160, h: 50 });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!btnRef.current) return;
-    const ro = new ResizeObserver(([e]) => {
-      setDims({ w: e.contentRect.width, h: e.contentRect.height });
-    });
-    ro.observe(btnRef.current);
-    return () => ro.disconnect();
+    const measure = () => {
+      const r = btnRef.current!.getBoundingClientRect();
+      if (r.width > 0) setDims({ w: r.width, h: r.height });
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
   }, []);
 
   const pad = 5;
