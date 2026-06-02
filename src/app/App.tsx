@@ -201,10 +201,8 @@ function Card({ children, className = '', delay = 0, hover = true }: {
         background: C.card,
         border: `1px solid ${C.border}`,
         transition: 'border-color 0.2s',
-        position: 'relative',
       }}
     >
-      <TechBorderOverlay />
       {children}
     </motion.div>
   );
@@ -419,6 +417,7 @@ export default function App() {
   const [expandedCert, setExpandedCert] = useState<string | null>(null);
   const [lang, setLang] = useState<Lang>('en');
   const [lightboxImg, setLightboxImg] = useState<string | null>(null);
+  const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
 
   const t = translations[lang];
 
@@ -933,9 +932,8 @@ export default function App() {
                 />
                 <div
                   className="rounded-xl p-6"
-                  style={{ background: C.card, border: `1px solid ${C.border}`, position: 'relative' }}
+                  style={{ background: C.card, border: `1px solid ${C.border}` }}
                 >
-                  <TechBorderOverlay rx={12} />
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-1">
                     <h3 style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, fontSize: '1.05rem', color: C.text }}>
                       {exp.role}
@@ -971,9 +969,8 @@ export default function App() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08 }}
                 className="rounded-xl p-6"
-                style={{ background: C.card, border: `1px solid ${C.border}`, position: 'relative' }}
+                style={{ background: C.card, border: `1px solid ${C.border}` }}
               >
-                <TechBorderOverlay rx={12} />
                 <h3 className="mb-4 uppercase tracking-wider text-sm" style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, color: C.accent }}>
                   {cat}
                 </h3>
@@ -991,9 +988,8 @@ export default function App() {
             viewport={{ once: true }}
             transition={{ delay: 0.3 }}
             className="mt-8 rounded-xl p-6"
-            style={{ background: C.card, border: `1px solid ${C.border}`, position: 'relative' }}
+            style={{ background: C.card, border: `1px solid ${C.border}` }}
           >
-            <TechBorderOverlay rx={12} />
             <h3 className="mb-4 uppercase tracking-wider text-sm" style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, color: C.accent }}>
               {t.coreCompHeading}
             </h3>
@@ -1076,23 +1072,113 @@ export default function App() {
             ))}
           </motion.div>
 
-          <motion.a
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+          {/* Contact Form */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            href="mailto:abdullah.mushtaq6876@gmail.com"
-            className="inline-block px-10 py-3 rounded font-semibold tracking-widest text-sm uppercase"
+            transition={{ delay: 0.15 }}
+            className="w-full text-left mb-10"
             style={{
-              fontFamily: 'Oswald, sans-serif',
-              background: C.accent,
-              color: '#fff',
+              background: C.card,
+              border: `1px solid ${C.border}`,
+              borderRadius: 16,
+              padding: '2rem',
             }}
-            whileHover={{ backgroundColor: C.accentHi } as any}
           >
-            {t.contactCta}
-          </motion.a>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <label className="text-xs uppercase tracking-widest" style={{ color: C.faint, fontFamily: 'Oswald, sans-serif' }}>Name</label>
+                  <input
+                    type="text"
+                    placeholder="Your name"
+                    value={contactForm.name}
+                    onChange={e => setContactForm(f => ({ ...f, name: e.target.value }))}
+                    className="w-full rounded-lg px-4 py-2.5 text-sm outline-none"
+                    style={{
+                      background: C.bg1,
+                      border: `1px solid ${C.border}`,
+                      color: C.text,
+                      transition: 'border-color 0.2s',
+                    }}
+                    onFocus={e => (e.currentTarget.style.borderColor = C.accent)}
+                    onBlur={e => (e.currentTarget.style.borderColor = C.border)}
+                  />
+                </div>
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <label className="text-xs uppercase tracking-widest" style={{ color: C.faint, fontFamily: 'Oswald, sans-serif' }}>Email</label>
+                  <input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={contactForm.email}
+                    onChange={e => setContactForm(f => ({ ...f, email: e.target.value }))}
+                    className="w-full rounded-lg px-4 py-2.5 text-sm outline-none"
+                    style={{
+                      background: C.bg1,
+                      border: `1px solid ${C.border}`,
+                      color: C.text,
+                      transition: 'border-color 0.2s',
+                    }}
+                    onFocus={e => (e.currentTarget.style.borderColor = C.accent)}
+                    onBlur={e => (e.currentTarget.style.borderColor = C.border)}
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs uppercase tracking-widest" style={{ color: C.faint, fontFamily: 'Oswald, sans-serif' }}>Message</label>
+                <textarea
+                  rows={4}
+                  placeholder="Your message..."
+                  value={contactForm.message}
+                  onChange={e => setContactForm(f => ({ ...f, message: e.target.value }))}
+                  className="w-full rounded-lg px-4 py-2.5 text-sm outline-none resize-none"
+                  style={{
+                    background: C.bg1,
+                    border: `1px solid ${C.border}`,
+                    color: C.text,
+                    transition: 'border-color 0.2s',
+                  }}
+                  onFocus={e => (e.currentTarget.style.borderColor = C.accent)}
+                  onBlur={e => (e.currentTarget.style.borderColor = C.border)}
+                />
+              </div>
 
-          <p className="mt-14 text-xs" style={{ color: C.faint }}>
+              {/* Send Message button with revolving border */}
+              <div className="flex justify-end mt-1">
+                <div style={{ position: 'relative', display: 'inline-block' }}>
+                  <TechBorderOverlay rx={6} />
+                  <button
+                    onClick={() => {
+                      const subject = encodeURIComponent(`Portfolio Contact from ${contactForm.name || 'Visitor'}`);
+                      const body = encodeURIComponent(
+                        `Name: ${contactForm.name}\nEmail: ${contactForm.email}\n\nMessage:\n${contactForm.message}`
+                      );
+                      window.open(
+                        `https://mail.google.com/mail/?view=cm&fs=1&to=abdullah.mushtaq6876@gmail.com&su=${subject}&body=${body}`,
+                        '_blank'
+                      );
+                    }}
+                    className="px-8 py-3 rounded font-semibold tracking-widest text-sm uppercase"
+                    style={{
+                      fontFamily: 'Oswald, sans-serif',
+                      background: C.accent,
+                      color: '#fff',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'background 0.2s',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = C.accentHi)}
+                    onMouseLeave={e => (e.currentTarget.style.background = C.accent)}
+                  >
+                    {t.contactCta}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          <p className="mt-4 text-xs" style={{ color: C.faint }}>
             {t.contactFooter}
           </p>
         </div>
