@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
 import { motion } from 'motion/react';
-import { Mail, Linkedin, Github, ChevronDown, MapPin, Calendar, ImagePlus, User, Instagram, Facebook } from 'lucide-react';
+import { Mail, Linkedin, Github, ChevronDown, MapPin, Calendar, ImagePlus, User, Instagram, Facebook, Menu, X } from 'lucide-react';
 
 import { translations, Lang } from './translations';
 
@@ -225,7 +225,7 @@ function Tag({ children }: { children: React.ReactNode }) {
   );
 }
 
-// ─── Tech Border Keyframes ────────────────────────────────────────────────────
+// ─── Tech Border Keyframes ─────────────────────���──────────────────────────────
 const TECH_KEYFRAMES = `
   @keyframes techBorderCW  { to { stroke-dashoffset: -1000; } }
   @keyframes techBorderCCW { to { stroke-dashoffset:  1000; } }
@@ -439,14 +439,15 @@ function CertImageCard({ cert, delay, onClick }: { cert: CertEntry; delay: numbe
         border: `1px solid ${hovered ? C.accent : C.border}`,
         transition: 'border-color 0.2s, box-shadow 0.2s',
         boxShadow: hovered ? `0 4px 24px ${C.accent}44` : '0 2px 8px rgba(0,0,0,0.25)',
-        background: '#f0f0f0',
+        background: '#ffffff',
         aspectRatio: '4/3',
       }}>
         <img
           src={cert.image}
           alt={cert.name}
+          loading="lazy"
           style={{
-            width: '100%', height: '100%', objectFit: 'cover', display: 'block',
+            width: '100%', height: '100%', objectFit: 'contain', display: 'block',
             transform: hovered ? 'scale(1.04)' : 'scale(1)',
             transition: 'transform 0.35s ease',
           }}
@@ -572,6 +573,7 @@ function CertGroup({ issuer, certs, groupIndex, onViewImage }: {
 // ─── Main App ───────────────────────────────────────────────────────────────
 export default function App() {
   const [lang, setLang] = useState<Lang>('en');
+  const [menuOpen, setMenuOpen] = useState(false);
   const [lightboxImg, setLightboxImg] = useState<string | null>(null);
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
 
@@ -582,18 +584,20 @@ export default function App() {
     document.documentElement.setAttribute('lang', lang);
   }, [lang, t.dir]);
 
-  const scrollTo = (id: string) =>
+  const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    setMenuOpen(false);
+  };
 
   const NAV = ['home', 'about', 'education', 'achievements', 'certifications', 'projects', 'experience', 'skills', 'contact'];
 
   const certifications: Record<string, CertEntry[]> = {
     IBM: [
-      { name: 'Cybersecurity IT Fundamentals Specialization',  year: '2025', verify: 'https://www.credly.com/badges/0c572a23-5a62-4c0f-880c-c62b8904cf61', image: '/certs/ibm-cyber-fundamentals.png' },
+      { name: 'Cybersecurity IT Fundamentals Specialization',  year: '2025', verify: 'https://www.credly.com/badges/0c572a23-5a62-4c0f-880c-c62b8904cf61', image: '/certs/ibm/ibm-cyber-fundamentals.png' },
       { name: 'IBM AI Product Manager',                        year: '2025', verify: 'https://coursera.org/verify/professional-cert/FNJGYEJG4LZ5' },
-      { name: 'IBM Business Intelligence (BI) Analyst',        year: '2024', verify: 'https://coursera.org/verify/professional-cert/PVQEKBFXPK9E', image: '/certs/ibm-bi-analyst.jpg' },
+      { name: 'IBM Business Intelligence (BI) Analyst',        year: '2024', verify: 'https://coursera.org/verify/professional-cert/PVQEKBFXPK9E', image: '/certs/ibm/ibm-bi-analyst.jpg' },
       { name: 'IBM Cybersecurity Analyst',                     year: '2025', verify: 'https://coursera.org/verify/professional-cert/HO1CYE5BQASP' },
-      { name: 'IBM Data Analyst',                              year: '2024', verify: 'https://coursera.org/verify/professional-cert/7ZGAD8X8CI28', image: '/certs/ibm-data-analyst.jpg' },
+      { name: 'IBM Data Analyst',                              year: '2024', verify: 'https://coursera.org/verify/professional-cert/7ZGAD8X8CI28', image: '/certs/ibm/ibm-data-analyst.jpg' },
       { name: 'IBM IT Project Manager',                        year: '2025', verify: 'https://coursera.org/verify/professional-cert/LGI1T1AEDYX0' },
       { name: 'IBM IT Support',                                year: '2025', verify: 'https://coursera.org/verify/professional-cert/XF5RZZ1FJU19' },
       { name: 'IBM Project Manager',                           year: '2025', verify: 'https://coursera.org/verify/professional-cert/C6BAGBISN5XV' },
@@ -607,18 +611,18 @@ export default function App() {
       { name: 'Program Management' },
     ],
     Google: [
-      { name: 'AI Professional Certification' },
+      { name: 'Google AI Professional Certificate',           year: '2026', image: '/certs/google/google-ai.png' },
+      { name: 'Google Cybersecurity Professional Certificate', year: '2025', image: '/certs/google/google-cybersecurity.png' },
+      { name: 'Google IT Support Professional Certificate',    year: '2024', verify: 'https://coursera.org/verify/professional-cert/DX8HA8WBDE41', image: '/certs/google/google-it-support.png' },
+      { name: 'Google Project Management Certificate',         year: '2024', verify: 'https://coursera.org/verify/professional-cert/HLAXBFUWNWFQ', image: '/certs/google/google-project-management.jpg' },
+      { name: 'Networking in Google Cloud',                    year: '2025', image: '/certs/google/networking-google-cloud.png' },
+      { name: 'Fundamentals of Digital Marketing',             year: '2020', verify: 'https://learndigital.withgoogle.com/link/1qsdpcedm9s', image: '/certs/google/digital-marketing.jpg' },
       { name: 'Cloud Certification Engineer Preparation' },
       { name: 'Cloud Network Engineer' },
-      { name: 'Cybersecurity V2' },
-      { name: 'Digital Marketing Certification' },
-      { name: 'IT Support Professional Certificate' },
-      { name: 'Networking in Google Cloud' },
-      { name: 'Project Management Professional Certificate' },
     ],
     Cisco: [
-      { name: 'Ethical Hacking' },
-      { name: 'Introduction to Cybersecurity' },
+      { name: 'Ethical Hacker',                  year: '2025', image: '/certs/cisco/ethical-hacker.jpg' },
+      { name: 'Introduction to Cybersecurity',   year: '2025', image: '/certs/cisco/intro-to-cybersecurity.jpg' },
     ],
     Oracle: [
       { name: 'AI Vector Search Certified Professional' },
@@ -628,9 +632,9 @@ export default function App() {
       { name: 'Oracle Certified Foundations Associate' },
     ],
     'HP Life': [
+      { name: 'Agile Project Management',                  year: '2025', image: '/certs/hp-life/agile-project-management.jpg' },
+      { name: 'Introduction to Cybersecurity Awareness',   year: '2025', image: '/certs/hp-life/cybersecurity-awareness.jpg' },
       { name: 'Certified Ethical Hacking Awareness' },
-      { name: 'Cybersecurity Awareness' },
-      { name: 'Project Management Specialization' },
     ],
     OPSWAT: [{ name: 'Critical Infrastructure Protection' }],
     Rutgers: [
@@ -639,19 +643,19 @@ export default function App() {
       { name: 'Supply Chain Management Specialization' },
     ],
     'EU Cyber Academy': [
-      { name: 'CRPO – Certified Ransomware Protection Officer' },
-      { name: 'CSCSO – Certified SME Cyber Security Officer' },
+      { name: 'CRPO – Certified Ransomware Protection Officer', year: '2026', image: '/certs/eu-cyber-academy/crpo.png' },
+      { name: 'CSCSO – Certified SME Cyber Security Officer',    year: '2026', image: '/certs/eu-cyber-academy/cscso.png' },
     ],
     'ISC2': [{ name: 'Cybersecurity Specialist (CC)' }],
     'EC-Council': [{ name: 'Cybersecurity for Businesses' }],
     NEBOSH: [{ name: 'International General Certificate in Occupational Health and Safety' }],
     LEORON: [{ name: 'ACGRC – Advanced Certificate in Governance, Risk and Compliance' }],
     'ISO/IEC': [{ name: 'ISO/IEC 27001:2022 Lead Auditor' }],
-    'Govt. of Punjab': [{ name: 'Certified Ethical Hacker' }],
+    'Govt. of Punjab': [{ name: 'Certified Ethical Hacker (CEH)', year: '2025', image: '/certs/govt-punjab/certified-ethical-hacker.png' }],
     Other: [
-      { name: 'ADP – Payroll Specialist' },
+      { name: 'ADP – Entry-Level Payroll Specialist', year: '2024', verify: 'https://coursera.org/verify/professional-cert/9AE6CICGP7NM', image: '/certs/other/adp-payroll-specialist.jpg' },
+      { name: 'HRCI – Human Resource Associate',       year: '2024', image: '/certs/other/hrci-human-resource-associate.png' },
       { name: 'Alison – Diploma in Human Resources Management' },
-      { name: 'HRCI – Human Resource Associate' },
       { name: 'Unilever – Supply Chain Data Analyst' },
       { name: 'Univ. of Maryland – Cybersecurity in the AI Era' },
       { name: 'Univ. of Minnesota – Human Resource Management' },
@@ -714,7 +718,68 @@ export default function App() {
               ))}
             </div>
           </div>
+
+          {/* Mobile hamburger */}
+          <button
+            onClick={() => setMenuOpen(o => !o)}
+            className="md:hidden flex items-center justify-center"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
+            style={{
+              width: 42, height: 42, borderRadius: 8,
+              background: 'transparent', border: `1px solid ${C.border}`, color: C.text,
+            }}
+          >
+            {menuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
         </div>
+
+        {/* Mobile dropdown panel */}
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden overflow-hidden"
+            style={{ borderTop: `1px solid ${C.border}`, background: `${C.bg1}f5` }}
+          >
+            <div className="px-6 py-4 flex flex-col">
+              {NAV.map(s => (
+                <button
+                  key={s}
+                  onClick={() => scrollTo(s)}
+                  className="text-left py-3 hover:text-white transition-colors"
+                  style={{
+                    fontFamily: 'Oswald, sans-serif', fontWeight: 500, fontSize: '0.95rem',
+                    letterSpacing: '0.1em', color: C.muted, textTransform: 'uppercase',
+                    borderBottom: `1px solid ${C.border}55`,
+                  }}
+                >
+                  {t.navLabels[s as keyof typeof t.navLabels] ?? s}
+                </button>
+              ))}
+              {/* Language Switcher */}
+              <div className="flex items-center gap-2 pt-4">
+                {(['en', 'ar', 'de'] as Lang[]).map(l => (
+                  <button
+                    key={l}
+                    onClick={() => setLang(l)}
+                    className="px-3 py-1.5 rounded text-xs font-semibold transition-all"
+                    style={{
+                      fontFamily: 'Oswald, sans-serif',
+                      letterSpacing: '0.08em',
+                      background: lang === l ? C.accent : 'transparent',
+                      color: lang === l ? '#fff' : C.faint,
+                      border: `1px solid ${lang === l ? C.accent : C.border}`,
+                    }}
+                  >
+                    {l.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
       </motion.nav>
 
       {/* ── Hero ── */}
