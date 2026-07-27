@@ -314,12 +314,26 @@ function TechLineButton({
   const pad = 5;
   const svgW = dims.w + pad * 2;
   const svgH = dims.h + pad * 2;
-  // Use the actual rect dimensions (inset by 1.5px on each side) for perimeter
+  // Use actual rect dimensions (inset 1.5px each side) for perimeter calc
   const rectW = svgW - 3;
   const rectH = svgH - 3;
   const perim = 2 * (rectW + rectH);
-  const dash = 64;
+
+  // Short dash so it fits entirely on a vertical side (H ≈ rectH)
+  const dash = Math.min(28, Math.floor(rectH * 0.55));
   const gap  = perim - dash;
+
+  // Place Line-1 (CW) centered on the LEFT side of the rect
+  // Left side path spans: (2*rectW + rectH) → perim, length = rectH
+  // Center of left side = 2*rectW + rectH + rectH/2 = 2*rectW + 1.5*rectH
+  // dashoffset for a dash centred there: perim - (center - dash/2)
+  const offset1 = Math.round(perim - (2 * rectW + 1.5 * rectH) + dash / 2);
+
+  // Place Line-2 (CCW) centered on the RIGHT side — opposite side of the rect
+  // Right side path spans: rectW → rectW + rectH, length = rectH
+  // Center = rectW + rectH/2
+  // dashoffset: perim - (center - dash/2)
+  const offset2 = Math.round(perim - (rectW + 0.5 * rectH) + dash / 2);
 
   return (
     <div
@@ -349,7 +363,7 @@ function TechLineButton({
         {children}
       </button>
 
-      {/* Animated tech border overlay */}
+      {/* Animated tech border — two dashes starting on opposite vertical sides */}
       <svg
         style={{
           position: 'absolute',
@@ -361,58 +375,31 @@ function TechLineButton({
           overflow: 'visible',
         }}
       >
-        {/* Line 1 — clockwise, bright accent */}
+        {/* Line 1 — clockwise, starts on left side, bright accent */}
         <rect
           x={1.5} y={1.5}
           width={rectW} height={rectH}
           rx={6}
           fill="none"
           stroke={C.accentHi}
-          strokeWidth={1.8}
-          strokeLinecap="square"
+          strokeWidth={2}
+          strokeLinecap="round"
           strokeDasharray={`${dash} ${gap}`}
-          strokeDashoffset={0}
-          style={{ animation: 'techBorderCW 4s linear infinite' }}
+          strokeDashoffset={offset1}
+          style={{ animation: 'techBorderCW 3.5s linear infinite' }}
         />
-        {/* Arrow tick at head of line 1 */}
-        <rect
-          x={1.5} y={1.5}
-          width={rectW} height={rectH}
-          rx={6}
-          fill="none"
-          stroke={C.accentHi}
-          strokeWidth={2.5}
-          strokeLinecap="butt"
-          strokeDasharray={`4 ${perim - 4}`}
-          strokeDashoffset={-dash + 4}
-          style={{ animation: 'techBorderCW 4s linear infinite' }}
-        />
-
-        {/* Line 2 — counter-clockwise, softer accent */}
+        {/* Line 2 — counter-clockwise, starts on right side, softer accent */}
         <rect
           x={1.5} y={1.5}
           width={rectW} height={rectH}
           rx={6}
           fill="none"
           stroke={C.accent}
-          strokeWidth={1.8}
-          strokeLinecap="square"
+          strokeWidth={2}
+          strokeLinecap="round"
           strokeDasharray={`${dash} ${gap}`}
-          strokeDashoffset={perim / 2}
-          style={{ animation: 'techBorderCCW 4s linear infinite' }}
-        />
-        {/* Arrow tick at head of line 2 */}
-        <rect
-          x={1.5} y={1.5}
-          width={rectW} height={rectH}
-          rx={6}
-          fill="none"
-          stroke={C.accent}
-          strokeWidth={2.5}
-          strokeLinecap="butt"
-          strokeDasharray={`4 ${perim - 4}`}
-          strokeDashoffset={perim / 2 + dash - 4}
-          style={{ animation: 'techBorderCCW 4s linear infinite' }}
+          strokeDashoffset={offset2}
+          style={{ animation: 'techBorderCCW 3.5s linear infinite' }}
         />
       </svg>
     </div>
