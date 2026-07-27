@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
-import { motion } from 'motion/react';
-import { Mail, Linkedin, Github, ChevronDown, MapPin, Calendar, ImagePlus, User, Instagram, Facebook, Menu, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Mail, Linkedin, Github, ChevronDown, MapPin, Calendar, ImagePlus, User, Instagram, Facebook, Menu, X, FolderOpen, Folder } from 'lucide-react';
 
 import { translations, Lang } from './translations';
 
@@ -480,82 +480,242 @@ function CertImageCard({ cert, delay, onClick }: { cert: CertEntry; delay: numbe
   );
 }
 
-// ─── CertGroup — issuer heading + image cards (or text rows) ─────────────────
-function CertGroup({ issuer, certs, groupIndex, onViewImage }: {
+// ─── Folder tab colours — rotate through a small palette ─────────────────────
+const FOLDER_COLORS = [
+  { tab: '#3e7cb1', tabText: '#fff', glow: '#3e7cb144' },
+  { tab: '#2d6a8f', tabText: '#fff', glow: '#2d6a8f44' },
+  { tab: '#1d5c7a', tabText: '#fff', glow: '#1d5c7a44' },
+  { tab: '#4a8fb5', tabText: '#fff', glow: '#4a8fb544' },
+  { tab: '#355f80', tabText: '#fff', glow: '#355f8044' },
+];
+
+// ─── CertFolder — folder card that expands to show certs ──────────────────────
+function CertFolder({ issuer, certs, groupIndex, onViewImage }: {
   issuer: string;
   certs: CertEntry[];
   groupIndex: number;
   onViewImage: (src: string) => void;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
   const withImage = certs.filter(c => c.image);
   const textOnly  = certs.filter(c => !c.image);
+  const previews  = withImage.slice(0, 4);
+  const palette   = FOLDER_COLORS[groupIndex % FOLDER_COLORS.length];
+  const TAB_H     = 30;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ delay: groupIndex * 0.06 }}
-      style={{ marginBottom: '2.8rem' }}
+      transition={{ delay: groupIndex * 0.04, duration: 0.45 }}
+      style={{ position: 'relative', paddingTop: TAB_H }}
     >
-      {/* ── Issuer header ── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: '1.1rem' }}>
-        <h3 style={{
-          fontFamily: 'Oswald, sans-serif', fontWeight: 700, fontSize: '1rem',
-          color: C.accent, margin: 0, letterSpacing: '0.08em', textTransform: 'uppercase',
+      {/* ── Folder tab ── */}
+      <div
+        onClick={() => setIsOpen(o => !o)}
+        style={{
+          position: 'absolute', top: 0, left: 0,
+          height: TAB_H + 2, // +2 so it overlaps the top border of the body
+          minWidth: 100, maxWidth: '60%',
+          padding: '0 16px',
+          background: isOpen ? palette.tab : C.card,
+          border: `1.5px solid ${isOpen ? palette.tab : C.border}`,
+          borderBottom: 'none',
+          borderRadius: '8px 8px 0 0',
+          display: 'flex', alignItems: 'center', gap: 6,
+          cursor: 'pointer',
+          transition: 'background 0.25s, border-color 0.25s',
+          zIndex: 2,
+          boxShadow: isOpen ? `0 -4px 14px ${palette.glow}` : 'none',
+          userSelect: 'none',
+        }}
+      >
+        <motion.div animate={{ rotate: isOpen ? -10 : 0 }} transition={{ duration: 0.2 }}>
+          {isOpen
+            ? <FolderOpen size={14} style={{ color: isOpen ? '#fff' : palette.tab, flexShrink: 0 }} />
+            : <Folder     size={14} style={{ color: palette.tab, flexShrink: 0 }} />
+          }
+        </motion.div>
+        <span style={{
+          fontFamily: 'Oswald, sans-serif', fontWeight: 700,
+          fontSize: '0.68rem', letterSpacing: '0.1em',
+          textTransform: 'uppercase', whiteSpace: 'nowrap',
+          color: isOpen ? '#fff' : palette.tab,
+          transition: 'color 0.25s',
         }}>
           {issuer}
-        </h3>
-        <span style={{
-          fontSize: '0.65rem', color: C.accentHi, background: `${C.accent}22`,
-          padding: '2px 8px', borderRadius: 20, fontWeight: 600,
-        }}>
-          {certs.length}
         </span>
-        <div style={{ flex: 1, height: 1, background: `${C.border}77` }} />
       </div>
 
-      {/* ── Image cards (certs that have images) ── */}
-      {withImage.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem', marginBottom: textOnly.length > 0 ? '1rem' : 0 }}>
-          {withImage.map((cert, ci) => (
-            <CertImageCard key={ci} cert={cert} delay={ci * 0.07} onClick={() => onViewImage(cert.image!)} />
-          ))}
-        </div>
-      )}
-
-      {/* ── Text rows (certs without images yet) ── */}
-      {textOnly.length > 0 && (
-        <div style={{
-          background: C.card, borderRadius: 10, border: `1px solid ${C.border}`,
+      {/* ── Folder body ── */}
+      <div
+        style={{
+          background: C.card,
+          border: `1.5px solid ${isOpen ? palette.tab : C.border}`,
+          borderRadius: '0 8px 8px 8px',
           overflow: 'hidden',
-        }}>
-          {textOnly.map((cert, ci) => (
-            <motion.div
-              key={ci}
-              initial={{ opacity: 0, x: -12 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: ci * 0.04 }}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 12,
-                padding: '9px 18px',
-                borderBottom: ci < textOnly.length - 1 ? `1px solid ${C.border}55` : 'none',
-              }}
-            >
-              <span style={{ width: 2, height: 12, background: `${C.accent}88`, borderRadius: 2, flexShrink: 0 }} />
-              <span style={{ flex: 1, fontSize: '0.83rem', color: C.muted, lineHeight: 1.3 }}>
-                {cert.name}
-              </span>
-              {cert.year && (
-                <span style={{ fontFamily: 'monospace', fontSize: '0.6rem', color: `${C.faint}99`, flexShrink: 0 }}>
-                  {cert.year}
-                </span>
-              )}
-            </motion.div>
-          ))}
+          transition: 'border-color 0.25s, box-shadow 0.25s',
+          boxShadow: isOpen ? `0 6px 28px ${palette.glow}` : '0 2px 8px rgba(0,0,0,0.2)',
+          cursor: isOpen ? 'default' : 'pointer',
+        }}
+        onClick={() => { if (!isOpen) setIsOpen(true); }}
+      >
+        {/* Header row (always visible) */}
+        <div
+          style={{
+            display: 'flex', alignItems: 'center', gap: 10,
+            padding: '13px 16px',
+            borderBottom: `1px solid ${isOpen ? C.border + '88' : 'transparent'}`,
+            transition: 'border-color 0.25s',
+          }}
+        >
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{
+              fontFamily: 'Oswald, sans-serif', fontWeight: 700,
+              fontSize: '0.95rem', color: C.text, margin: 0,
+              letterSpacing: '0.06em', overflow: 'hidden',
+              textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            }}>
+              {issuer}
+            </p>
+          </div>
+
+          <span style={{
+            fontSize: '0.6rem', color: palette.tab,
+            background: `${palette.tab}22`,
+            padding: '2px 8px', borderRadius: 20, fontWeight: 700,
+            flexShrink: 0, letterSpacing: '0.04em',
+          }}>
+            {certs.length} {certs.length === 1 ? 'cert' : 'certs'}
+          </span>
+
+          <motion.div
+            animate={{ rotate: isOpen ? 180 : 0 }}
+            transition={{ duration: 0.25 }}
+            onClick={e => { e.stopPropagation(); setIsOpen(o => !o); }}
+            style={{ cursor: 'pointer', color: isOpen ? palette.tab : C.faint, flexShrink: 0 }}
+          >
+            <ChevronDown size={17} />
+          </motion.div>
         </div>
-      )}
+
+        {/* ── Closed preview strip ── */}
+        <AnimatePresence>
+          {!isOpen && (
+            <motion.div
+              key="preview"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              style={{ padding: '10px 16px 14px', overflow: 'hidden' }}
+            >
+              {previews.length > 0 ? (
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'nowrap' }}>
+                  {previews.map((cert, i) => (
+                    <div key={i} style={{
+                      width: 44, height: 32, borderRadius: 5, overflow: 'hidden',
+                      border: `1px solid ${C.border}`, background: '#fff', flexShrink: 0,
+                    }}>
+                      <img src={cert.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                    </div>
+                  ))}
+                  {certs.length > 4 && (
+                    <span style={{ fontSize: '0.68rem', color: C.faint, whiteSpace: 'nowrap' }}>
+                      +{certs.length - 4} more
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <p style={{ margin: 0, fontSize: '0.72rem', color: C.faint, lineHeight: 1.4 }}>
+                  {certs[0]?.name}
+                  {certs.length > 1 && (
+                    <span style={{ color: `${C.faint}88` }}> &amp; {certs.length - 1} more</span>
+                  )}
+                </p>
+              )}
+              <p style={{ margin: '8px 0 0', fontSize: '0.62rem', color: `${C.faint}88`, letterSpacing: '0.06em' }}>
+                CLICK TO OPEN
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ── Expanded certs ── */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              key="content"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.38, ease: [0.4, 0, 0.2, 1] }}
+              style={{ overflow: 'hidden' }}
+            >
+              <div style={{ padding: '14px 16px 18px' }}>
+
+                {/* Image cert grid */}
+                {withImage.length > 0 && (
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+                    gap: '0.85rem',
+                    marginBottom: textOnly.length > 0 ? '1rem' : 0,
+                  }}>
+                    {withImage.map((cert, ci) => (
+                      <motion.div
+                        key={ci}
+                        initial={{ opacity: 0, y: 18 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: ci * 0.055, duration: 0.3 }}
+                      >
+                        <CertImageCard cert={cert} delay={0} onClick={() => onViewImage(cert.image!)} />
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Text-only cert list */}
+                {textOnly.length > 0 && (
+                  <div style={{
+                    background: `${C.bg1}cc`, borderRadius: 8,
+                    border: `1px solid ${C.border}55`, overflow: 'hidden',
+                  }}>
+                    {textOnly.map((cert, ci) => (
+                      <motion.div
+                        key={ci}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: (withImage.length + ci) * 0.045, duration: 0.25 }}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 10,
+                          padding: '8px 14px',
+                          borderBottom: ci < textOnly.length - 1 ? `1px solid ${C.border}44` : 'none',
+                        }}
+                      >
+                        <span style={{
+                          width: 2, height: 10, borderRadius: 2, flexShrink: 0,
+                          background: palette.tab + 'aa',
+                        }} />
+                        <span style={{ flex: 1, fontSize: '0.81rem', color: C.muted, lineHeight: 1.35 }}>
+                          {cert.name}
+                        </span>
+                        {cert.year && (
+                          <span style={{ fontSize: '0.6rem', color: C.faint, flexShrink: 0, fontFamily: 'monospace' }}>
+                            {cert.year}
+                          </span>
+                        )}
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </motion.div>
   );
 }
@@ -1003,9 +1163,18 @@ export default function App() {
       <section id="certifications" className="py-20 sm:py-28 px-4 sm:px-6 relative" style={{ background: C.bg2, zIndex: 1 }}>
         <div className="max-w-7xl mx-auto">
           <SectionHeading>{t.certHeading}</SectionHeading>
-          {Object.entries(certifications).map(([issuer, certs], i) => (
-            <CertGroup key={issuer} issuer={issuer} certs={certs} groupIndex={i} onViewImage={setLightboxImg} />
-          ))}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gap: '2.2rem 1.6rem',
+              paddingTop: '0.5rem',
+            }}
+          >
+            {Object.entries(certifications).map(([issuer, certs], i) => (
+              <CertFolder key={issuer} issuer={issuer} certs={certs} groupIndex={i} onViewImage={setLightboxImg} />
+            ))}
+          </div>
         </div>
       </section>
 
