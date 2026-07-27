@@ -314,7 +314,10 @@ function TechLineButton({
   const pad = 5;
   const svgW = dims.w + pad * 2;
   const svgH = dims.h + pad * 2;
-  const perim = 2 * (svgW + svgH);
+  // Use the actual rect dimensions (inset by 1.5px on each side) for perimeter
+  const rectW = svgW - 3;
+  const rectH = svgH - 3;
+  const perim = 2 * (rectW + rectH);
   const dash = 64;
   const gap  = perim - dash;
 
@@ -361,7 +364,7 @@ function TechLineButton({
         {/* Line 1 — clockwise, bright accent */}
         <rect
           x={1.5} y={1.5}
-          width={svgW - 3} height={svgH - 3}
+          width={rectW} height={rectH}
           rx={6}
           fill="none"
           stroke={C.accentHi}
@@ -374,7 +377,7 @@ function TechLineButton({
         {/* Arrow tick at head of line 1 */}
         <rect
           x={1.5} y={1.5}
-          width={svgW - 3} height={svgH - 3}
+          width={rectW} height={rectH}
           rx={6}
           fill="none"
           stroke={C.accentHi}
@@ -388,7 +391,7 @@ function TechLineButton({
         {/* Line 2 — counter-clockwise, softer accent */}
         <rect
           x={1.5} y={1.5}
-          width={svgW - 3} height={svgH - 3}
+          width={rectW} height={rectH}
           rx={6}
           fill="none"
           stroke={C.accent}
@@ -401,7 +404,7 @@ function TechLineButton({
         {/* Arrow tick at head of line 2 */}
         <rect
           x={1.5} y={1.5}
-          width={svgW - 3} height={svgH - 3}
+          width={rectW} height={rectH}
           rx={6}
           fill="none"
           stroke={C.accent}
@@ -828,7 +831,7 @@ export default function App() {
 
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.9 }}
-            className="flex items-center justify-center gap-4"
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <TechLineButton primary onClick={() => scrollTo('contact')}>
               {t.heroCta1}
@@ -844,10 +847,10 @@ export default function App() {
       <Divider />
 
       {/* ── About ── */}
-      <section id="about" className="py-28 px-6 relative" style={{ background: C.bg1, zIndex: 1 }}>
+      <section id="about" className="py-28 px-4 sm:px-6 relative" style={{ background: C.bg1, zIndex: 1 }}>
         <div className="max-w-6xl mx-auto">
           <SectionHeading>{t.aboutHeading}</SectionHeading>
-          <div className="grid md:grid-cols-3 gap-10 items-start">
+          <div className="grid md:grid-cols-3 gap-8 lg:gap-10 items-start">
             <div className="md:col-span-2 space-y-5">
               {[t.aboutP1, t.aboutP2, t.aboutP3].map((p, i) => (
                 <motion.p
@@ -867,7 +870,7 @@ export default function App() {
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="rounded-xl p-8 text-center"
+              className="rounded-xl p-6 sm:p-8 text-center w-full"
               style={{ background: C.card, border: `1px solid ${C.border}` }}
             >
               {/* Profile Picture */}
@@ -887,12 +890,20 @@ export default function App() {
                   { label: t.aboutExp, value: t.aboutExpVal },
                   { label: t.aboutLangs, value: t.aboutLangsVal },
                 ].map(r => (
-                  <div key={r.label} className="flex justify-between gap-4">
-                    <span style={{ color: C.faint }}>{r.label}</span>
+                  <div key={r.label} className="flex justify-between gap-2 flex-wrap sm:flex-nowrap">
+                    <span style={{ color: C.faint, flexShrink: 0 }}>{r.label}</span>
                     {'link' in r ? (
-                      <a href={r.link} target="_blank" rel="noopener noreferrer" className="text-right hover:underline" style={{ color: C.accentHi }}>{r.value}</a>
+                      <a
+                        href={r.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-right hover:underline"
+                        style={{ color: C.accentHi, wordBreak: 'break-all', minWidth: 0 }}
+                      >
+                        {r.value}
+                      </a>
                     ) : (
-                      <span className="text-right" style={{ color: C.text }}>{r.value}</span>
+                      <span className="text-right" style={{ color: C.text, wordBreak: 'break-word', minWidth: 0 }}>{r.value}</span>
                     )}
                   </div>
                 ))}
@@ -905,7 +916,7 @@ export default function App() {
       <Divider />
 
       {/* ── Education ── */}
-      <section id="education" className="py-28 px-6 relative" style={{ background: C.bg2, zIndex: 1 }}>
+      <section id="education" className="py-20 sm:py-28 px-4 sm:px-6 relative" style={{ background: C.bg2, zIndex: 1 }}>
         <div className="max-w-4xl mx-auto">
           <SectionHeading>{t.eduHeading}</SectionHeading>
           <div className="space-y-6">
@@ -913,16 +924,16 @@ export default function App() {
               const EDU_LOGOS = ['/logo-iu.png', '/logo-ict.jpg', '/logo-alhosn.png'];
               return (
               <Card key={i} delay={i * 0.1}>
-                <div className="flex gap-5 items-start">
+                <div className="flex gap-4 items-start">
                   <div className="flex-shrink-0">
                     <img
                       src={EDU_LOGOS[i]}
                       alt="Institution logo"
-                      style={{ width: 56, height: 56, objectFit: 'contain', borderRadius: 8, background: '#fff', padding: 4 }}
+                      style={{ width: 48, height: 48, objectFit: 'contain', borderRadius: 8, background: '#fff', padding: 4 }}
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-2">
                       <h3 style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, fontSize: '1.05rem', color: C.text }}>
                         {edu.degree}
                       </h3>
@@ -944,7 +955,7 @@ export default function App() {
       <Divider />
 
       {/* ── Achievements ── */}
-      <section id="achievements" className="py-28 px-6 relative" style={{ background: C.bg1, zIndex: 1 }}>
+      <section id="achievements" className="py-20 sm:py-28 px-4 sm:px-6 relative" style={{ background: C.bg1, zIndex: 1 }}>
         <div className="max-w-6xl mx-auto">
           <SectionHeading>{t.achHeading}</SectionHeading>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1002,7 +1013,7 @@ export default function App() {
       <Divider />
 
       {/* ── Certifications ── */}
-      <section id="certifications" className="py-28 px-6 relative" style={{ background: C.bg2, zIndex: 1 }}>
+      <section id="certifications" className="py-20 sm:py-28 px-4 sm:px-6 relative" style={{ background: C.bg2, zIndex: 1 }}>
         <div className="max-w-7xl mx-auto">
           <SectionHeading>{t.certHeading}</SectionHeading>
           {Object.entries(certifications).map(([issuer, certs], i) => (
@@ -1014,7 +1025,7 @@ export default function App() {
       <Divider />
 
       {/* ── Projects ── */}
-      <section id="projects" className="py-28 px-6 relative" style={{ background: C.bg1, zIndex: 1 }}>
+      <section id="projects" className="py-20 sm:py-28 px-4 sm:px-6 relative" style={{ background: C.bg1, zIndex: 1 }}>
         <div className="max-w-7xl mx-auto">
           <SectionHeading>{t.projHeading}</SectionHeading>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1084,10 +1095,10 @@ export default function App() {
       <Divider />
 
       {/* ── Experience ── */}
-      <section id="experience" className="py-28 px-6 relative" style={{ background: C.bg2, zIndex: 1 }}>
+      <section id="experience" className="py-20 sm:py-28 px-4 sm:px-6 relative" style={{ background: C.bg2, zIndex: 1 }}>
         <div className="max-w-4xl mx-auto">
           <SectionHeading>{t.expHeading}</SectionHeading>
-          <div className="relative pl-6 border-l" style={{ borderColor: C.border }}>
+          <div className="relative pl-7 sm:pl-8 border-l" style={{ borderColor: C.border }}>
             {t.experiences.map((exp, i) => (
               <motion.div
                 key={i}
@@ -1129,7 +1140,7 @@ export default function App() {
       <Divider />
 
       {/* ── Skills ── */}
-      <section id="skills" className="py-28 px-6 relative" style={{ background: C.bg1, zIndex: 1 }}>
+      <section id="skills" className="py-20 sm:py-28 px-4 sm:px-6 relative" style={{ background: C.bg1, zIndex: 1 }}>
         <div className="max-w-6xl mx-auto">
           <SectionHeading>{t.skillsHeading}</SectionHeading>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1175,7 +1186,7 @@ export default function App() {
       <Divider />
 
       {/* ── Contact ── */}
-      <section id="contact" className="py-28 px-6 relative" style={{ background: C.bg2, zIndex: 1, overflow: 'hidden' }}>
+      <section id="contact" className="py-20 sm:py-28 px-4 sm:px-6 relative" style={{ background: C.bg2, zIndex: 1, overflow: 'hidden' }}>
         {/* Video background */}
         <video
           autoPlay
